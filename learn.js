@@ -18,7 +18,7 @@
 
 // ----------------------------------------------------------------------
 
-    // NodeJS's Role in Creating A Server
+    // NodeJS's Role in Creating A Server (How WEB Works)
         
         //          ( https://page-url.com )
         //                  Server              ---> Databases , Authentication , Input Validation 
@@ -28,7 +28,8 @@
         //                |       v
         //              Client (Browser)
 
-        // Whenever we enter a url in browser, it sends a request to that url
+        // Whenever we enter a url in browser, it sends a REQUEST to that url (more specifically, sends REQUEST to the IP ADDRESS belonging to that domain)
+        // We write the code (in NodeJS, PHP, Ruby, etc) that runs on that computer in the Internet (which has that IP Address) --> Server
         // Server takes the REQUESTS from the browser & returns RESPONSE
         // Server is used to do tasks we can't/don't want to do from inside the browser
         // Server can be used to: 
@@ -236,8 +237,7 @@
                         });
                 }, 2000);
 
-            // These are SYNC code, beacuse they are executed right after each other (i.e THERE IS NOT OTHER DELAY other than the Hardware)
+            // These are SYNC code, because they are executed right after each other (i.e THERE IS NOT OTHER DELAY other than the Hardware)
                 console.log('Hello!');
                 console.log('How Are You?');
-                    
         
