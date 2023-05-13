@@ -1,0 +1,15 @@
+{
+  "name": "sequilize-restapi-with-nodejs",
+  "version": "1.0.0",
+  "description": "Sequelize & RestAPI with NodeJS",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "author": "Vansh Chheda",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}

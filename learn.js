@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------
-    // What Is Javascript ?
+    // What Is Javascript ? (01-A)
         // Javascript is a programming language we typically use in the browser to manipulate the DOM (i.e. to manipulate the page which was loaded in the browser)
 
         // Vanilla Javascript runs in a browser that allows you to interact with the page after it was loaded (thus important to make a Interactive UI)
@@ -18,7 +18,7 @@
 
 // ----------------------------------------------------------------------
 
-    // NodeJS's Role in Creating A Server (How WEB Works)
+    // NodeJS's Role in Creating A Server (How WEB Works) (01-B)
         
         //          ( https://page-url.com )
         //                  Server              ---> Databases , Authentication , Input Validation 
@@ -39,7 +39,7 @@
         // --> All this, because USER can manipulate the browser side code (via Dev Tools, etc) but the server side working/code isn't available to the USER, thus making it secure to perform important backend errands
 
 // ----------------------------------------------------------------------
-    // What is REPL ?
+    // What is REPL ? (01-C)
         // READ  --> Read User Input
         // EVAL  --> Evaluate User Input 
         // PRINT --> Print Output (Result)
@@ -49,7 +49,7 @@
         // in R-E-P-L, the code isn't stored anywhere & all of it vanishes after the session terminates
 
 // ----------------------------------------------------------------------
-    // Javascript Brush-Up
+    // Javascript Brush-Up (01-D)
         
         // Difference between 'let' & 'var'
 
@@ -240,4 +240,75 @@
             // These are SYNC code, because they are executed right after each other (i.e THERE IS NOT OTHER DELAY other than the Hardware)
                 console.log('Hello!');
                 console.log('How Are You?');
+
+// ----------------------------------------------------------------------
+    // NPM SCRIPTS (03-A)
         
+        // To initialize a Node Project & also to use certain special (easier) functionalities of Node (i.e third-party modules), You first have to do `npm init`
+
+        // This will create a package.json file, which will contain all the essential information regarding your Project (like, What all packages have ya used, etc)
+
+        // Now we come to the `scripts` (inside package.json)
+
+            // here, you can add your own scripts, so as to execute certain useful commands quickly, without typing the entire command in the terminal.
+
+            // "start" command is a special/Reserved name in the `scripts`, where you can enter the 'entry file execution' as the value.
+
+                // NOTE: If you want to share this project, people just have to run npm start {& they dont have to search for the entry file in your js files}
+
+                // For Execution : `npm start`
+
+            // if you execute a normal script (like, any custom script name that you've added) YOU CANT JUST TYPE `npm <script_name>`
+                
+                // For Execution : `npm run <script_name>`
+
+// ----------------------------------------------------------------------
+    // NPM PACKAGES (03-B)
+
+        // npm packages can be divided into two categories :
+
+                // 1) Development dependencies - packages which mostly help you during the development
+
+                // 2) Production dependencies - packages that help you for the app, as it's running on the server
+        
+        // `npm install <package_name>`
+
+            // Additionally: 
+
+                // `npm install <package_name> --save-dev` 
+                    // It will install the package as a 'development dependency'
+
+                // `npm install <package_name> --save`
+                    // This will install the package as a 'production dependency'
+
+                // `npm install <package_name> -g`
+                    // This will install the package NOT IN THIS PROJECT but GLOBALLY ON THE MACHINE, so we can use it anywhere (in other project as well)
+        
+        // IMPORTANT DETAIL: 
+                // Suppose you have installed `nodemon` locally (in the project, not globally) 
+
+                // & added `"start": "nodemon app.js"`
+
+                // now, if you directly run `nodemon app.js` in the terminal, IT WON'T EXECUTE! (since not installed globally)
+
+                // but, if you type `npm start`, IT WILL EXECUTE nodemon. i.e. NPM SCRIPTS WILL LOOK FOR LOCAL VERSION OF THE PACKAGE & EXECUTE IT
+
+
+// ----------------------------------------------------------------------
+    // ERRORS & Debugging
+        
+        // Types :
+    
+            // Syntax Error 
+                // --> typos in your code
+                // --> thrown automatically when you run the program
+
+            // Runtime Error
+                // --> not typos
+                // --> but when you execute the code, IT JUST BREAKS, WHEN IT RUNS
+
+            // Logical Error
+                // --> most difficult ones
+                // --> NO ERROR MESSAGE THROWN
+                // --> app doesn't work the way it should
+

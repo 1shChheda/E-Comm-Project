@@ -1,3 +1,5 @@
+// Working with Core Modules (02-B)
+
 const fs = require('fs');
 
 const requestHandler = (req, res) => {
@@ -39,8 +41,10 @@ const requestHandler = (req, res) => {
 
         return req.on("end", () => { // when all the data is collected in "body"
             const parsedBody = Buffer.concat(body).toString();
+
             const finalMessage = decodeURIComponent(parsedBody.split('=')[1].split('+').join(' ')); // `decodeURIComponent` --> decodes the special character's encoded form, which comes as the part of URL-encoding of form data
             console.log(finalMessage);
+
             fs.appendFile('message.txt', `${finalMessage}\n`, (err) => {
                 // 2) 
                 res.writeHead(302, {'Location' : '/'}); 
