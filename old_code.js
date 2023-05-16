@@ -95,3 +95,5 @@ module.exports = {  // to export Multiple Things
     handler: requestHandler,
     randomText: `Backend is Ready!`
 }
+
+// OBSOLETE after the use of ExpressJS

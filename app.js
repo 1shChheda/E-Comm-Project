@@ -15,7 +15,7 @@
     //     console.log("Server is running at port 3000...");
     // });
 
-    
+
 // ----------------------------------------------------------------------
 
 // Working with Express (04-B)
@@ -26,45 +26,21 @@ const app = express();
 
 const bodyParser = require('body-parser');
 
+const adminRoutes = require('./routes/admin');
+
+const shopRoutes = require('./routes/shop');
+
 app.use(bodyParser.urlencoded()); // It returns a middleware like any other, plus it does the WHOLE BODY PARSING thing we did manually earlier (in routes.js) 
 
 // app.use(bodyParser.urlencoded({extended: false})); // to avoid the safety alert text
 
-app.use('/products', (req, res, next) => {
-    console.log("in the products page");
-    res.send(`
-        <h1>Products Page</h1>
-        <form action="/cart" method="POST">
-            <input type="text" name="product"autocomplete="off">
-            <button type="submit">Add To Cart</button>
-        </form>
-    `); 
-    // next(); // No Need. Will Result in an Error
-});
+app.use(shopRoutes);
+app.use(adminRoutes); // NOTE: as said before, ORDER MATTERS! But...
 
-// app.use('/cart', (req, res, next) => {
-//     console.log(req.body); // needs to be parsed separately (else it'll give `undefined`)
-//     res.redirect('/'); // much more convenient than conventional code used earlier
-// });
+// But, in `shopRoutes, we've used 'router.get' which will only fire first if there was a GET method mentioned in it (which is not)
 
-// `app.get()`& `app.post()` are same as `app.use()` , but IT ONLY FIRES FOR AN INCOMING GET REQUEST & POST REQUEST respectively
-
-app.post('/cart', (req, res, next) => {
-    console.log(req.body); // needs to be parsed separately (else it'll give `undefined`)
-    res.redirect('/'); // much more convenient than conventional code used earlier
-});
-
-app.use('/', (req, res, next) => {
-
-    if (req.url === '/favicon.ico') {
-        // Skip further processing for favicon request
-        return res.sendStatus(204);
-    }
-
-    // '/' does not mean the full path (after the domain) has to be a `/`, but it has to start with that
-
-    console.log("in the next middleware!");
-    res.send(`<h1>Hello World! from NodeJS</h1>`); 
+app.use('/', (req, res, next) => { // added a 404 Page Not Found
+    res.status(404).send(`<h1>404: Page Not Found</h1>`);
 });
 
 app.listen(3000, () => {
