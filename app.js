@@ -24,6 +24,8 @@ const express = require('express');
 
 const app = express(); 
 
+const path = require('path');
+
 const bodyParser = require('body-parser');
 
 const adminRoutes = require('./routes/admin');
@@ -35,12 +37,14 @@ app.use(bodyParser.urlencoded()); // It returns a middleware like any other, plu
 // app.use(bodyParser.urlencoded({extended: false})); // to avoid the safety alert text
 
 app.use(shopRoutes);
-app.use(adminRoutes); // NOTE: as said before, ORDER MATTERS! But...
-
-// But, in `shopRoutes, we've used 'router.get' which will only fire first if there was a GET method mentioned in it (which is not)
+app.use('/admin', adminRoutes); // FILTERING: only routes starting with `/admin` will go in to the admin routes file
+// This allows us to add a specific url before all the routes of a particular file, & also only visiting those routes when the specific url is attached before the route's url
+    
+    // NOTE: as said before, ORDER MATTERS! But...
+    // But, in `shopRoutes, we've used 'router.get' which will only fire first if there was a GET method mentioned in it (which is not)
 
 app.use('/', (req, res, next) => { // added a 404 Page Not Found
-    res.status(404).send(`<h1>404: Page Not Found</h1>`);
+    res.status(404).sendFile(path.join(__dirname, 'views', '404-error.html'));
 });
 
 app.listen(3000, () => {
