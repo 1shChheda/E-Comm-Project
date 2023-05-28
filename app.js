@@ -28,7 +28,7 @@ const path = require('path');
 
 const bodyParser = require('body-parser');
 
-const adminRoutes = require('./routes/admin');
+const adminData = require('./routes/admin');
 
 const shopRoutes = require('./routes/shop');
 
@@ -36,15 +36,23 @@ app.use(bodyParser.urlencoded()); // It returns a middleware like any other, plu
 
 // app.use(bodyParser.urlencoded({extended: false})); // to avoid the safety alert text
 
+app.use(express.static(path.join(__dirname, 'public'))); // for serving static files
+    // When a request is received (let say, the homepage wants `main.css` while being served), Express.js will check if the requested URL matches a file in the "public" directory. If a match is found, it will serve that file directly to the client
+
+// app.set(`key`, `value`) basically assigns a `value` to default configurations, so that it can we used globally in the code, with the same `value`
+app.set('view engine', 'ejs'); // telling expressJS we want to compile dynamic templates with the ejs engine
+
+app.set('views', 'views'); // telling expressJS where to find these templates
+
 app.use(shopRoutes);
-app.use('/admin', adminRoutes); // FILTERING: only routes starting with `/admin` will go in to the admin routes file
+app.use('/admin', adminData.routes); // FILTERING: only routes starting with `/admin` will go in to the admin routes file
 // This allows us to add a specific url before all the routes of a particular file, & also only visiting those routes when the specific url is attached before the route's url
     
     // NOTE: as said before, ORDER MATTERS! But...
     // But, in `shopRoutes, we've used 'router.get' which will only fire first if there was a GET method mentioned in it (which is not)
 
 app.use('/', (req, res, next) => { // added a 404 Page Not Found
-    res.status(404).sendFile(path.join(__dirname, 'views', '404-error.html'));
+    res.status(404).render('404-error', { pageTitle : "Page Not Found" });
 });
 
 app.listen(3000, () => {

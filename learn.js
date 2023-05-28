@@ -391,3 +391,22 @@
             console.log("Server is running at port 3000...");
         });
 
+
+// ----------------------------------------------------------------------
+    // Templating Engines (05-A)
+
+        // EJS 
+            // <p><%= name %></p>
+            // Use normal HTML and plain JavaScript in yout templates
+
+        // Handlebars
+            // <p>{{ name }}</p>
+            // Handlebars have bit less features available than EJS
+            // Use normal HTML and custom template language
+
+        // Pug (Jade)
+            // p #{name}
+            // Use minimal HTML and custom template language
+            // Indentations matter
+
+// ----------------------------------------------------------------------
