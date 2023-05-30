@@ -28,9 +28,11 @@ const path = require('path');
 
 const bodyParser = require('body-parser');
 
-const adminData = require('./routes/admin');
+const adminRoutes = require('./routes/admin');
 
 const shopRoutes = require('./routes/shop');
+
+const errorController = require('./controllers/404error');
 
 app.use(bodyParser.urlencoded()); // It returns a middleware like any other, plus it does the WHOLE BODY PARSING thing we did manually earlier (in routes.js) 
 
@@ -45,15 +47,13 @@ app.set('view engine', 'ejs'); // telling expressJS we want to compile dynamic t
 app.set('views', 'views'); // telling expressJS where to find these templates
 
 app.use(shopRoutes);
-app.use('/admin', adminData.routes); // FILTERING: only routes starting with `/admin` will go in to the admin routes file
+app.use('/admin', adminRoutes); // FILTERING: only routes starting with `/admin` will go in to the admin routes file
 // This allows us to add a specific url before all the routes of a particular file, & also only visiting those routes when the specific url is attached before the route's url
     
     // NOTE: as said before, ORDER MATTERS! But...
     // But, in `shopRoutes, we've used 'router.get' which will only fire first if there was a GET method mentioned in it (which is not)
 
-app.use('/', (req, res, next) => { // added a 404 Page Not Found
-    res.status(404).render('404-error', { pageTitle : "Page Not Found" });
-});
+app.use('/', errorController.get404page); // I've SPLIT THE CODE into `MVC`
 
 app.listen(3000, () => {
     console.log("Server is running at port 3000...");

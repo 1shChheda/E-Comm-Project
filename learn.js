@@ -410,3 +410,24 @@
             // Indentations matter
 
 // ----------------------------------------------------------------------
+    // Model View Controller (MVC)
+
+        // Separation Of Concerns
+            // making sure that different parts of your code do different things and you clearly know which part is responsible for what.
+
+        // Models
+            // represents the "data" & "business logic" in your code
+            // working with data, saving/fetching data, etc --> all under "Models"
+
+        // Views (literally `views`)
+            // represents "what users see"
+            // It displays the data from the Model to the user
+            // handles user interactions
+            // It receives input from the user and sends it to the Controller for processing
+
+        // Controllers
+            // coordinates the interaction between the Model and the View
+            // handles user inputs --> processes requests --> updates Model --> communicates with Views to render the appropriate response
+
+            // ==> ROUTES
+                // routes are basically the things which define upon which path for which http method which controller code should execute

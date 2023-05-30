@@ -2,9 +2,7 @@
 
 const express = require('express');
 
-const path = require('path');
-
-const rootDir = require('../utils/path');
+const productsController = require('../controllers/products');
 
 const router = express.Router();
     // helps you group related routes together and organize your code better
@@ -12,21 +10,8 @@ const router = express.Router();
 
 // NOTE : `router` functions work in the exact same way as the `app` function worked
 
-const products = [];
 
-router.get('/add-product', (req, res, next) => {
-    console.log("in the products page");
-
-    // const filePath= path.join(rootDir, 'views', 'add-product.html');
-    
-    // res.sendFile(filePath); 
-
-    res.render('add-product', {
-        pageTitle : "Add Product",
-        path : '/admin/add-product'
-    });
-    // next(); // No Need. Will Result in an Error
-});
+router.get('/add-product', productsController.getAddProduct); // I've SPLIT THE CODE into `MVC`
 
 // router.use('/cart', (req, res, next) => {
 //     console.log(req.body); // needs to be parsed separately (else it'll give `undefined`)
@@ -35,14 +20,7 @@ router.get('/add-product', (req, res, next) => {
 
 // `router.get()`& `router.post()` are same as `router.use()` , but IT ONLY FIRES FOR AN INCOMING GET REQUEST & POST REQUEST respectively
 
-router.post('/add-product', (req, res, next) => {
-    // console.log(req.body); // needs to be parsed separately (else it'll give `undefined`)
-
-    products.push({ title : req.body.title }); // storing data in a variable for now
-        // sharing it to shop.js 
-
-    res.redirect('/'); // much more convenient than conventional code used earlier
-});
+router.post('/add-product', productsController.postAddProduct); // I've SPLIT THE CODE into `MVC`
 
 // IMPORTANT NOTE : 
     // same path can be used, If the METHODS differ
@@ -50,8 +28,4 @@ router.post('/add-product', (req, res, next) => {
     // in such a setup, where our paths, in a router file, start with the same part or same segment,...
         // we can take that segment & mention it in the app.js file...{check it out}
 
-module.exports = {
-    routes : router, // the `router` will have the above 2 routes registered within it 
-
-    products : products
-}
+module.exports = router // the `router` will have the above 2 routes registered within it
