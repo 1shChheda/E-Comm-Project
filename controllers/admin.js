@@ -1,13 +1,15 @@
 const Product = require('../models/productData');
 
+const products = Product.fetchAll();
+
 const getAddProduct = (req, res, next) => {
-    console.log("in the products page");
+    console.log("in the admin/add-products page");
 
     // const filePath= path.join(rootDir, 'views', 'add-product.html');
     
     // res.sendFile(filePath); 
 
-    res.render('add-product', {
+    res.render('admin/add-product', {
         pageTitle : "Add Product",
         path : '/admin/add-product'
     });
@@ -21,41 +23,29 @@ const postAddProduct = (req, res, next) => {
         // sharing it to shop.js 
         // REMOVED FROM HERE...since I've SPLIT THE CODE into `MVC`
 
-    const product = new Product(req.body.title);
+    const title = req.body.title;
+    const imageUrl = req.body.imageUrl;
+    const description = req.body.description;
+    const price = req.body.price;
+    
+    const product = new Product(title, imageUrl, description, price);
     product.save();
     
     res.redirect('/'); // much more convenient than conventional code used earlier
 };
 
 const getProducts = (req, res, next) => {
-    
-    if (req.url === '/favicon.ico') {
-        // Skip further processing for favicon request
-        return res.sendStatus(204);
-    }
 
-    // '/' does not mean the full path (after the domain) has to be a `/`, but it has to start with this
-
-    console.log("in the home/shop page");
-    // res.send(`<h1>Hello World! from NodeJS</h1>`); 
-
-    // res.sendFile('/views/shop.html'); // GIVES AN ERROR!
-        // But Why?
-            // this method requires an `absolute path` to the file you want to send
-            // `/views/shop.html`, is a relative path and does not represent the absolute path to the file
-
-    // const filePath = path.join(rootDir, 'views', 'shop.html');
-
-    // res.sendFile(filePath);
+    console.log("in the admin/products page");
     
     const products = Product.fetchAll();
 
-    res.render('shop',{ 
-        pageTitle : "Shop",
-        path : "/",
+    res.render('admin/products',{ 
+        pageTitle : "Admin Products",
+        path : "/admin/products",
         prods : products, 
         hasProducts : products.length > 0
-    }); // this allows us to `render` a dynamic template page, & also allows us to pass in data that should be added to the template
+    });
 };
 
 module.exports = {
