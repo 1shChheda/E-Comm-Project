@@ -64,7 +64,7 @@ const getCart = (req, res, next) => {
 };
 
 const postCart = (req, res, next) => {
-    const productId = req.body.productId;
+    const productId = req.body.productId; // came using the `hidden input area`, with `value= "productId"`
     Product.findProductById(productId, product => {
         Cart.addProduct(productId, product.price);
     });
