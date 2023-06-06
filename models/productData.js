@@ -15,6 +15,8 @@ class Product {
     }
 
     save() {
+        this.id = Math.random().toString();
+
         // products.push(this); // only `this` will refer to the object created based on the class and that's te object I want to store in this array
 
         const folderLocation = path.join(rootDir, 'data');
@@ -55,6 +57,15 @@ class Product {
             
         const fileContent = fs.readFileSync(fileLocation);
         return JSON.parse(fileContent);
+    }
+
+    static findProductById(productId, callback) {
+        
+        const products = Product.fetchAll();
+
+        const product = products.find(prod => prod.id === productId);
+
+        callback(product);
     }
 }
 

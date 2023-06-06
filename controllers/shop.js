@@ -1,5 +1,7 @@
 const Product = require('../models/productData');
 
+const Cart = require('../models/cartData');
+
 const products = Product.fetchAll();
 
 const getHomePage = (req, res, next) => {
@@ -38,6 +40,19 @@ const getProducts = (req, res, next) => {
     }); // this allows us to `render` a dynamic template page, & also allows us to pass in data that should be added to the template
 };
 
+const getSeparateProduct = (req, res, next) => {
+
+    const productId = req.params.productId;
+    Product.findProductById(productId, product => {
+        // console.log(product);
+        res.render('shop/product-detail', {
+            pageTitle : `${product.title} - Details`,
+            path : `/products`,
+            product : product
+        });
+    });
+};
+
 const getCart = (req, res, next) => {
 
     console.log("in the cart");
@@ -46,6 +61,14 @@ const getCart = (req, res, next) => {
         pageTitle : "My Cart",
         path : '/cart'
     });
+};
+
+const postCart = (req, res, next) => {
+    const productId = req.body.productId;
+    Product.findProductById(productId, product => {
+        Cart.addProduct(productId, product.price);
+    });
+    res.redirect('/cart');
 };
 
 const getCheckOut = (req, res, next) => {
@@ -69,7 +92,9 @@ const getOrders = (req, res, next) => {
 module.exports = {
     getHomePage : getHomePage,
     getProducts : getProducts,
+    getSeparateProduct : getSeparateProduct,
     getCart : getCart,
+    postCart : postCart,
     getOrders : getOrders,
     getCheckOut : getCheckOut
 }
