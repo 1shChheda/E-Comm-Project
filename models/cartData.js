@@ -70,6 +70,42 @@ class Cart {
                     });
             });
     }
+
+    static deleteProduct(productId, productPrice) { // to Delete the entire product from the Cart as well, if the product is deleted from the Website itself (by Admin)
+        fs.readFile(fileLocation, (err, fileContent) => {
+            if (err) {
+                return;
+            }
+            const cart = JSON.parse(fileContent);
+
+            const updatedCart = { ...cart };
+
+            const product = updatedCart.products.find(prod => prod.id === productId);
+
+            if(!product) {
+                return;
+            }
+
+            updatedCart.products = updatedCart.products.filter(prod => prod.id !== productId);
+
+            updatedCart.totalPrice -=  (productPrice * product.qty).toFixed(2);
+
+            fs.writeFile(fileLocation, JSON.stringify(updatedCart), err => {
+                console.log(err);
+            });
+        });
+    }
+
+    static getCart(callback) {
+        fs.readFile(fileLocation, (err, fileContent) => {
+            const cart = JSON.parse(fileContent);
+            if(err) {
+                callback(null);
+            } else {
+                callback(cart);
+            }
+        });
+    }
 }
 
 module.exports = Cart

@@ -83,6 +83,15 @@ const postEditProduct = (req, res, next) => {
     res.redirect('/admin/products');
 };
 
+const postDeleteProduct = (req, res, next) => {
+
+    const productId = req.body.productId;
+
+    Product.delete(productId);
+
+    res.redirect('/admin/products');
+};
+
 const getProducts = (req, res, next) => {
 
     console.log("in the admin/products page");
@@ -102,5 +111,6 @@ module.exports = {
     postAddProduct : postAddProduct,
     getEditProduct : getEditProduct,
     postEditProduct : postEditProduct,
+    postDeleteProduct : postDeleteProduct,
     getProducts : getProducts
 }
