@@ -1172,3 +1172,46 @@ const Product = require('./models/productData');
             // We send a 200 Response & also store the Session info in a "Cookie"
             // Then when the User tries to access Restricted routes, we can use the "session" to check is the user is logged-in or not
 
+// ----------------------------------------------------------------------
+    // CSRF ATTACKS
+        // Cross Site Request Forgery
+            // a special kind of attack pattern WHERE people can abuse your sessions and trick users of your application to execute malicious code
+            
+            // How does it work?
+                // 1) User logs into your website and gets a session cookie
+                // 2) Attacker sends an email with a link to a fake website that looks like your real website
+                // 3) User clicks the link, thinking it's your real website, and lands on the fake website
+                // 4) The fake website sends a hidden request (POST) to your real website, asking to transfer money to another account
+                // 5) The request includes the user's valid session cookie (since the user had already logged in at Step 1), making it look like a legitimate request
+                // 6) Your server processes the request using the user's session and transfers the money, thinking it's a genuine action by the user
+
+            // How to protect from it?
+                // We have to ensure that people can only use your session if they are working with your views (views rendered by your application)
+                // so that the session is not available on any fake page
+                // to ensure his, we use "CSRF Tokens"
+
+        // CSRF Tokens
+            // package used: "csurf"
+
+            // It is a hashed value
+            // We embed it into our forms (/ inside our views) for every request that does something on the backend (that changes the users state)
+            // We can include such a token in our views then and on the server, this package will check "if the incoming request does have that valid token"
+
+            // How does this protect us?
+                // The request sent by the fake site to our backend can theoretically use user session
+                // BUT! Such requests will be missing the token 
+                // This token is impossible TO GUESS or STEAL (bcoz a new token is generated for every page we render)
+
+        // Implementation:
+            // require in app.js --> const csrf = require('csurf');
+            // extract the middleware outta it --> const csrfProtection = csrf();
+            // use the middleware after session initialization (in app.js) --> app.use(csrfProtection);
+
+            // NOTE: for any NON-GET Request, this package will look for the existance of a CSRF Token (in the request body)
+
+            // for that, we need to make it available in our view first, RIGHT?
+                // To start with, add it in Homepage Controller (so we can access it in LogOut button in Navbar)
+
+                // NOTE: the "name" of the hidden input field will be "_csrf"
+
+                // also, we'll need to use it alongisde all our Routes further

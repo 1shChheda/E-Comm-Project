@@ -35,6 +35,8 @@ const MongoDBStore = require('connect-mongodb-session')(session);
     // By adding (session) after it, we are immediately invoking that function and passing session as a parameter to it
     // the final yield is a "Constructor Function"
 
+const csrf = require('csurf');
+
 const errorController = require('./controllers/404error');
 
 const db = require('./utils/database');
@@ -51,6 +53,8 @@ const store = new MongoDBStore({
     uri: process.env.DB_URI,
     collection: 'sessions'
 });
+
+const csrfProtection = csrf(); // we get a Middleware from this, which we use after we have initialized the session (line 71 - 83) {since this will use the session too}
 
 app.use(bodyParser.urlencoded()); // It returns a middleware like any other, plus it does the WHOLE BODY PARSING thing we did manually earlier (in routes.js) 
 
@@ -77,6 +81,8 @@ app.use(session({
 
     store: store // tells the session middleware to store the session data in MongoDB
 }));
+
+app.use(csrfProtection);
 
 // By the time we reach here, our Session Data will be loaded
 // So we just want to use that session data to load our real user, 

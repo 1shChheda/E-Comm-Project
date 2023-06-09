@@ -12,7 +12,8 @@ const getHomePage = (req, res, next) => {
                 path: "/",
                 prods: products,
                 hasProducts: products.length > 0,
-                isAuthenticated: req.session.isLoggedIn
+                isAuthenticated: req.session.isLoggedIn,
+                csrfToken: req.csrfToken()
             });
 
         })
