@@ -34,7 +34,7 @@ const shopRoutes = require('./routes/shop');
 
 const errorController = require('./controllers/404error');
 
-const db = require('./utils/database');
+const sequelize = require('./utils/database');
 
 
 app.use(bodyParser.urlencoded()); // It returns a middleware like any other, plus it does the WHOLE BODY PARSING thing we did manually earlier (in routes.js) 
@@ -58,6 +58,16 @@ app.use('/admin', adminRoutes); // FILTERING: only routes starting with `/admin`
 
 app.use('/', errorController.get404page); // I've SPLIT THE CODE into `MVC`
 
-app.listen(3000, () => {
-    console.log("Server is running at port 3000...");
-});
+sequelize.sync()
+    .then(result => {
+
+        // console.log(result);
+
+        // I only want to Start my server Once I know Models are ready
+        app.listen(3000, () => {
+            console.log("Server is running at port 3000...");
+        });
+    })
+    .catch(err => {
+        console.log(err);
+    }); // Sync all defined models to the DB
