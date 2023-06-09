@@ -27,8 +27,12 @@ const postAddProduct = (req, res, next) => {
     const description = req.body.description;
     const price = req.body.price;
     
-    const product = new Product(null, title, imageUrl, description, price); // `null` id added. Since if a new Product, id will be assigned in 
-    product.save()
+    Product.create({
+        title : title,
+        price : price,
+        description : description,
+        imageUrl : imageUrl
+    })
         .then(() => {
             res.redirect('/'); // much more convenient than conventional code used earlier
         })
@@ -55,22 +59,26 @@ const getEditProduct = (req, res, next) => {
 
     const productId = req.params.productId;
 
-    Product.findProductById(productId, product => {
-        
-        if(!product) {
-            res.status(404).render('404-error', {
-                pageTitle: "Page Not Found",
-                path: req.path 
-            });
-        }
+    Product.findByPk(productId)
+        .then(product => {
 
-        res.render('admin/edit-product', {
-            pageTitle : "Edit Product",
-            path : '/admin/edit-product',
-            editing : editMode,
-            product : product
-        });
-    });
+            if(!product) {
+                res.status(404).render('404-error', {
+                    pageTitle: "Page Not Found",
+                    path: req.path 
+                });
+            }
+    
+            res.render('admin/edit-product', {
+                pageTitle : "Edit Product",
+                path : '/admin/edit-product',
+                editing : editMode,
+                product : product
+            });
+
+        })
+        .catch(err => console.log(err));
+
 };
 
 const postEditProduct = (req, res, next) => {
@@ -79,17 +87,39 @@ const postEditProduct = (req, res, next) => {
     const updatedImageUrl = req.body.imageUrl;
     const updatedDescription = req.body.description;
     const updatedPrice = req.body.price;
-    const updatedProduct = new Product(productId, updatedTitle, updatedImageUrl, updatedDescription, updatedPrice);
-    updatedProduct.save();
-    res.redirect('/admin/products');
+
+    Product.findByPk(productId)
+        .then(product => {
+
+            // All these changes are implemented on our Local Machine
+            product.title = updatedTitle,
+            product.price = updatedPrice,
+            product.description = updatedDescription,
+            product.imageUrl = updatedImageUrl
+
+            // To save these changes in our database, we simply use:
+            return product.save();
+
+        })
+        .then(result => {
+            console.log("Product Updated!");
+            res.redirect('/admin/products'); // we shifted it here because we want the updated page to load after the Updation has been performed
+        })
+
+        // this `catch` block will catch errors from both `.findByPk()` & `.save()`
+        .catch(err => console.log(err));
 };
 
 const postDeleteProduct = (req, res, next) => {
 
     const productId = req.body.productId;
 
-    Product.delete(productId)
-        .then(() => {
+    Product.findByPk(productId)
+        .then(product => {
+            return product.destroy();
+        })
+        .then(results => {
+            console.log('Product Destroyed!');
             res.redirect('/admin/products');
         })
         .catch(err => console.log(err));
@@ -100,14 +130,14 @@ const getProducts = (req, res, next) => {
 
     console.log("in the admin/products page");
     
-    Product.fetchAll()
-        .then(([rows, fieldData]) => {
+    Product.findAll()
+        .then(products => {
             
             res.render('admin/products',{ 
                 pageTitle : "Admin Products",
                 path : "/admin/products",
-                prods : rows, 
-                hasProducts : rows.length > 0
+                prods : products, 
+                hasProducts : products.length > 0
             });
 
         })

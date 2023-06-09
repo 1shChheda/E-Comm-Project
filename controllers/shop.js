@@ -1,23 +1,25 @@
 const Product = require('../models/productData');
 
 const Cart = require('../models/cartData');
+const { Sequelize } = require('sequelize');
 
 const getHomePage = (req, res, next) => {
 
     console.log("in the homepage");
 
-    Product.fetchAll()
-        .then(([rows, fieldData]) => {
-            
+    Product.findAll()
+        .then(products => {
+
             res.render('shop/homepage', {
                 pageTitle : "HomePage",
                 path : "/",
-                prods : rows, 
-                hasProducts : rows.length > 0
+                prods : products, 
+                hasProducts : products.length > 0
             });
 
         })
         .catch(err => console.log(err));
+
 };
 
 const getProducts = (req, res, next) => {
@@ -36,36 +38,36 @@ const getProducts = (req, res, next) => {
 
     // res.sendFile(filePath);
 
-    Product.fetchAll()
-        .then(([rows, fieldData]) => {
+    Product.findAll()
+        .then(products => {
 
             res.render('shop/product-list', {
                 pageTitle : "All Products",
                 path :"/products",
-                prods : rows,
-                hasProducts : rows.length > 0
-            }); 
-            // this allows us to `render` a dynamic template page, & also allows us to pass in data that should be added to the template
-
+                prods : products,
+                hasProducts : products.length > 0
+            });
+            
         })
-        .catch(err => console.log(err)); 
+        .catch(err => console.log(err));
 };
 
 const getSeparateProduct = (req, res, next) => {
 
     const productId = req.params.productId;
-    Product.findProductById(productId)
-        .then(([rows]) => {
+    Product.findByPk(productId)
+        .then(product => {
 
             // console.log(rows);
             res.render('shop/product-detail', {
-                pageTitle : `${rows[0].title} - Details`,
+                pageTitle : `${product.title} - Details`,
                 path : `/products`,
-                product : rows[0]
+                product : product
             });
 
         })
         .catch(err => console.log(err));
+
 };
 
 const getCart = (req, res, next) => {

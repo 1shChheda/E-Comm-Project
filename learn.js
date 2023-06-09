@@ -328,6 +328,7 @@
             // Sails.js
 
         const express = require('express');
+const Product = require('./models/productData');
 
             // The `express` package exports a function
             // When you require the express package using `const express = require('express');` , 
@@ -557,7 +558,7 @@
                     // const pool = mysql.createPool({
                     //     host : 'localhost',
                     //     user : 'root',
-                    //     password : 'chheda1shvenom',
+                    //     password : 'password',
                     //     database : 'node-complete'
                     // });
 
@@ -574,3 +575,62 @@
                     // .catch(err => {
                     //     console.log(err);
                     // });
+
+// ----------------------------------------------------------------------
+    // SEQUELIZE
+
+        // To Focus On NodeJS & Bussiness Logic, Not SQL commands/queries
+
+        // What is Sequelize ?
+            // a Third Party Package
+            // precisely, it's an Object Relational Mapping library (ORM)
+
+            // What is ORM ?
+                // Object-Oriented Programming (OOP) <----> Relational Databases
+
+                // It performs all the SQL Code behind the scene &
+                // maps it into Javascript Objects with "convenience methods" which we can call to execute that behind the scenes SQL code 
+                // so that we never have to write SQL code on our own
+            
+            // Sequelize allows us to `define models` that represent `database tables`
+            // and then interact with those models to perform CRUD (Create, Read, Update, Delete) operations
+
+        // Core Concepts : 
+            // Models          e.g. User, Product
+            // Instances       const user = User.build()
+            // Queries         User.findAll()
+            // Associations    User.hasMany(Product)
+
+        // To Install `sequelize` --> `mysql2` package MUST BE INSTALLED AS WELL
+
+        // Main Implementation : 
+                // 1) Database Connection (in 'utils/database.js')
+
+            // CREATE (C)
+                // 2) Model Creation (using 'sequelize.define(modelName, attributes, options)')
+                // 3) Model Instance Creation [i.e. Record feeding in DB] (using `Product.create()`)
+
+            // READ (R)
+                // 4) Data Fetching (using 'Product.findAll()')
+                        // Product.findAll({
+                        //     where : Sequelize.and(
+                        //         { name : 'Vansh' },
+                        //         { age : {
+                        //             gt : 18
+                        //         } },
+                        //         { income : {
+                        //             lte : 100000
+                        //         } },
+                        //         Sequelize.or(
+                        //             { cgpa : { in: [4,5,6] } },
+                        //             { cgpa: { gt : 8 } }
+                        //         )
+                        //     )
+                        // })
+                
+                // 5) Fetching a particular Product/Item from the database (using 'Product.findByPk(productId)' )
+
+            // UPDATE (U)   
+                // Retrieve the record you want to update using one of the READ methods
+                // Modify the desired fields of the retrieved record object
+                // Call the "save()" method on the record object to persist the changes to the database.
