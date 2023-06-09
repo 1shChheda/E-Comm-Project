@@ -431,3 +431,146 @@
 
             // ==> ROUTES
                 // routes are basically the things which define upon which path for which http method which controller code should execute
+
+// ----------------------------------------------------------------------
+
+    // SQL vs NoSQL
+    
+        // Goal : Store Data & Make it Easily Accessible
+        // That's why we use a Database
+
+        // SQL
+            // Characteristics :
+                // Strong & Strictly Data Schema 
+                    // --> so that for each table, we clearly define how the data in there should look like...
+                    // i.e. which fields do we have, 
+                    // which type of data does each field store (number, string, boolean, etc)
+                
+                // Data Relations
+                    // we relate our different tables with basically three important kinds of relations,
+                        // one to one, 
+                        // one to many,
+                        // many to many
+
+                // Data is distributed across multiple tables which are then connected through RELATIONS
+            
+            // e.g:
+                // SELECT * FROM users WHERE age > 28
+
+        // NoSQL
+            // We have a Main Database (let say `Shop`)
+            // Within this, we have:
+
+                // "Collections" ( equivalent to `Tables` in SQL)
+                    // --> Users
+                    // --> Orders
+                // Within this, we store our data:
+
+                    // "Documents" ( records of data )
+                        // kind of look like JS Objects
+            
+            // Characteristics :  
+                // We can see that NoSQL doesn't have a Strict Schema ("Documents" can have different strucures, i.e. not necessarily have the same format)
+
+                // No Data Relations 
+                    // Instead, we use duplicate data wherever we need that data from the different Collections
+                    // No Connectiing of Tables required
+                        // Drawback: If we want to update an User's information, then we have to individually change the info wherever it has been used in different Collections
+
+                        // Advantage: Makes NoSQL VERY FAST & EFFICIENT to retrieve data & stuff
+
+                    // you CAN relate documents but you don't have to (and you shouldn't do it too much OR YOUR QUERIES BECOME SLOW!)
+
+                // (instead of RELATIONS) Works with Merged/Nested documents in an existing document
+
+        // Horizontal vs Vertical Scaling
+
+        // As our Application GROWS --> more data needs to be managed --> we need to SCALE OUR DATABASE
+
+            // Horizontal Scaling:
+
+                // In simple terms, it means "adding more servers to handle the increasing data and traffic"
+
+                // the database system becomes distributed, and data is partitioned and spread across multiple machines
+
+                // preferred in `NoSQL databases` as they are designed to scale horizontally by nature, allowing for seamless distribution of data across multiple nodes
+
+            // Vertical Scaling:
+
+                // In simple terms, it involves "upgrading the existing server hardware to handle increased data and traffic"
+                    
+                    // `upgrading` is done by "adding more resources (CPU, RAM, storage) to a single server"
+
+                // the database system remains on a single machine, but it becomes more powerful and capable of handling larger workloads
+
+                // preferred in traditional `SQL databases` where scaling horizontally can be more challenging due to the complex nature of "maintaining data consistency" across multiple nodes
+
+// ----------------------------------------------------------------------
+            
+
+    // How To Use SQL in NodeJS?
+
+        // Download MySQL Installer (for Windows)
+            // --> basically downloads all MySQL products in ONE-GO
+
+        // Open the WORKBENCH
+            // set-Up a new connection (ONLY IF THERE IS NO EXISITING CONNECTION in the WorkBench)
+            // else just open up the current running connection
+
+        // Go To "SCHEMAS" & Create a New Schema
+
+        // Now, we'll connect with this new Schema
+
+        // Install `mysql2` npm package in your Node application
+
+        // Two Ways to connect to our SQL Database
+
+            // 1) we set up one connection which we can then use to run queries and we should always close the connection once we're done with a query
+
+                // Using createConnection
+                    // const connection = mysql.createConnection({
+                    //     host: 'localhost',
+                    //     user: 'root',
+                    //     password: 'password',
+                    //     database: 'mydatabase'
+                    // });
+                    
+                    // connection.connect((err) => {
+                    //     if (err) {
+                    //     console.error('Error connecting to database:', err);
+                    //     return;
+                    //     }
+                    //     console.log('Connected to database!');
+                    //     // Perform database operations here
+                    //     connection.end(); // Close the connection when done
+                    // });
+
+                    // Drawback: 
+                        // we need to re-execute the code to create the connection for every new query
+                        // & NOTE, there will be A LOT OF QUERIES
+                    // ( Thus this method is inefficient )
+
+            // 2) we create a so-called "connection pool"
+                // it's a "collection of reusable connections"
+                // The pool helps manage and reuse connections, improving performance and scalability
+
+                    // const pool = mysql.createPool({
+                    //     host : 'localhost',
+                    //     user : 'root',
+                    //     password : 'chheda1shvenom',
+                    //     database : 'node-complete'
+                    // });
+
+                    // module.exports = pool.promise();
+
+                // & in `app.js`:
+
+                    // const db = require('./utils/database');
+
+                    // db.execute('SELECT * FROM products')
+                    // .then(result => {
+                    //     console.log(result);
+                    // })
+                    // .catch(err => {
+                    //     console.log(err);
+                    // });

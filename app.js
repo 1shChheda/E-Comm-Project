@@ -34,6 +34,9 @@ const shopRoutes = require('./routes/shop');
 
 const errorController = require('./controllers/404error');
 
+const db = require('./utils/database');
+
+
 app.use(bodyParser.urlencoded()); // It returns a middleware like any other, plus it does the WHOLE BODY PARSING thing we did manually earlier (in routes.js) 
 
 // app.use(bodyParser.urlencoded({extended: false})); // to avoid the safety alert text

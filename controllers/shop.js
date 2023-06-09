@@ -2,18 +2,22 @@ const Product = require('../models/productData');
 
 const Cart = require('../models/cartData');
 
-const products = Product.fetchAll();
-
 const getHomePage = (req, res, next) => {
 
     console.log("in the homepage");
 
-    res.render('shop/homepage', {
-        pageTitle : "HomePage",
-        path : "/",
-        prods : products, 
-        hasProducts : products.length > 0
-    });
+    Product.fetchAll()
+        .then(([rows, fieldData]) => {
+            
+            res.render('shop/homepage', {
+                pageTitle : "HomePage",
+                path : "/",
+                prods : rows, 
+                hasProducts : rows.length > 0
+            });
+
+        })
+        .catch(err => console.log(err));
 };
 
 const getProducts = (req, res, next) => {
@@ -32,25 +36,36 @@ const getProducts = (req, res, next) => {
 
     // res.sendFile(filePath);
 
-    res.render('shop/product-list',{ 
-        pageTitle : "All Products",
-        path : "/products",
-        prods : products, 
-        hasProducts : products.length > 0
-    }); // this allows us to `render` a dynamic template page, & also allows us to pass in data that should be added to the template
+    Product.fetchAll()
+        .then(([rows, fieldData]) => {
+
+            res.render('shop/product-list', {
+                pageTitle : "All Products",
+                path :"/products",
+                prods : rows,
+                hasProducts : rows.length > 0
+            }); 
+            // this allows us to `render` a dynamic template page, & also allows us to pass in data that should be added to the template
+
+        })
+        .catch(err => console.log(err)); 
 };
 
 const getSeparateProduct = (req, res, next) => {
 
     const productId = req.params.productId;
-    Product.findProductById(productId, product => {
-        // console.log(product);
-        res.render('shop/product-detail', {
-            pageTitle : `${product.title} - Details`,
-            path : `/products`,
-            product : product
-        });
-    });
+    Product.findProductById(productId)
+        .then(([rows]) => {
+
+            // console.log(rows);
+            res.render('shop/product-detail', {
+                pageTitle : `${rows[0].title} - Details`,
+                path : `/products`,
+                product : rows[0]
+            });
+
+        })
+        .catch(err => console.log(err));
 };
 
 const getCart = (req, res, next) => {

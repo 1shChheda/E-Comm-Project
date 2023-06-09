@@ -1,7 +1,5 @@
 const Product = require('../models/productData');
 
-const products = Product.fetchAll();
-
 const getAddProduct = (req, res, next) => {
     console.log("in the admin/add-products page");
 
@@ -30,9 +28,12 @@ const postAddProduct = (req, res, next) => {
     const price = req.body.price;
     
     const product = new Product(null, title, imageUrl, description, price); // `null` id added. Since if a new Product, id will be assigned in 
-    product.save();
+    product.save()
+        .then(() => {
+            res.redirect('/'); // much more convenient than conventional code used earlier
+        })
+        .catch(err => console.log(err));
     
-    res.redirect('/'); // much more convenient than conventional code used earlier
 };
 
 // QUERY PARAMETERS
@@ -87,23 +88,30 @@ const postDeleteProduct = (req, res, next) => {
 
     const productId = req.body.productId;
 
-    Product.delete(productId);
+    Product.delete(productId)
+        .then(() => {
+            res.redirect('/admin/products');
+        })
+        .catch(err => console.log(err));
 
-    res.redirect('/admin/products');
 };
 
 const getProducts = (req, res, next) => {
 
     console.log("in the admin/products page");
     
-    const products = Product.fetchAll();
+    Product.fetchAll()
+        .then(([rows, fieldData]) => {
+            
+            res.render('admin/products',{ 
+                pageTitle : "Admin Products",
+                path : "/admin/products",
+                prods : rows, 
+                hasProducts : rows.length > 0
+            });
 
-    res.render('admin/products',{ 
-        pageTitle : "Admin Products",
-        path : "/admin/products",
-        prods : products, 
-        hasProducts : products.length > 0
-    });
+        })
+        .catch(err => console.log(err));
 };
 
 module.exports = {
