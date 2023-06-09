@@ -1,6 +1,6 @@
 const { Sequelize } = require('sequelize'); // capital S (since we're gonna import a Constructor Function)
 
-const sequelize = new Sequelize('node-complete', 'root', 'chheda1shvenom', { 
+const sequelize = new Sequelize('node-complete', 'root', 'password', { 
     dialect : 'mysql', 
     host : 'localhost' 
 }); // this will setup a 'connection pool' (Actually, more than that)
