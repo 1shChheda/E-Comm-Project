@@ -74,35 +74,78 @@ const getCart = (req, res, next) => {
 
     console.log("in the cart");
 
-    Cart.getCart(cart => {
-        const allProducts = Product.fetchAll();
-        const cartProducts = [];
-        for (product of allProducts) {
+    req.user.getCart()
+        .then(cart => {
 
-            const cartProductData = cart.products.find(prod => prod.id === product.id);
+            return cart.getProducts()
+                .then(products => {
+                    res.render('shop/cart', {
+                        pageTitle : "My Cart",
+                        path : '/cart',
+                        products : products,
+                        // totalPrice : cart.totalPrice
+                    });
+                })
+                .catch(err => console.log(err));
 
-            if (cart.products.find(prod => prod.id === product.id)) {
-                cartProducts.push({
-                    productData : product, 
-                    qty : cartProductData.qty
-                });
-            }
-        }
-        res.render('shop/cart', {
-            pageTitle : "My Cart",
-            path : '/cart',
-            products : cartProducts,
-            totalPrice : cart.totalPrice
-        });
-    });
+        })
+        .catch(err => console.log(err));
+
+    // Cart.getCart(cart => {
+    //     const allProducts = Product.fetchAll();
+    //     const cartProducts = [];
+    //     for (product of allProducts) {
+
+    //         const cartProductData = cart.products.find(prod => prod.id === product.id);
+
+    //         if (cart.products.find(prod => prod.id === product.id)) {
+    //             cartProducts.push({
+    //                 productData : product, 
+    //                 qty : cartProductData.qty
+    //             });
+    //         }
+    //     }
+        // res.render('shop/cart', {
+        //     pageTitle : "My Cart",
+        //     path : '/cart',
+        //     products : cartProducts,
+        //     totalPrice : cart.totalPrice
+        // });
+    // });
 };
 
 const postCart = (req, res, next) => {
     const productId = req.body.productId; // came using the `hidden input area`, with `value= "productId"`
-    Product.findProductById(productId, product => {
-        Cart.addProduct(productId, product.price);
-    });
-    res.redirect('/cart');
+
+    let fetchedCart;
+    req.user.getCart()
+        .then(cart => {
+            fetchedCart = cart;
+            return cart.getProducts({ where : {id : productId} });
+        })
+        .then(products => {
+            let product;
+
+            if(products.length > 0) {
+                product = products[0]
+            }
+
+            let newQuantity = 1;
+            if(product) {
+                // Code here
+            }
+
+            return Product.findByPk(productId)
+                .then(prod => {
+                    return fetchedCart.addProduct(prod, { through : { quantity : newQuantity } });
+                })
+                .catch(err => console.log(err));
+
+        })
+        .then(() => {
+            res.redirect('/cart');
+        })
+        .catch(err => console.log(err));
 };
 
 const postCartDeleteProduct = (req, res, next) => {

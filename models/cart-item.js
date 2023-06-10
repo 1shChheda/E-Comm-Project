@@ -1,21 +1,18 @@
-// a Cart belongsTo a single User
-// a Cart hasMany Products
-// 'carts' table will hold different carts for different users
-
 const Sequelize = require('sequelize');
 
 const sequelize = require('../utils/database');
 
-const Cart = sequelize.define('cart', {
+const CartItem = sequelize.define('cartItem', {
     id : {
         type : Sequelize.INTEGER,
         autoIncrement : true,
         allowNull : true,
         primaryKey : true,
         unique : true
-    }
+    },
+    quantity : Sequelize.INTEGER
 }, {
-    tableName : 'carts'
+    tableName : 'cartItems'
 });
 
-module.exports = Cart;
+module.exports = CartItem;

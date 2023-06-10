@@ -36,6 +36,13 @@ const errorController = require('./controllers/404error');
 
 const sequelize = require('./utils/database');
 
+const Product = require('./models/productData');
+
+const User = require('./models/userData');
+
+const Cart = require('./models/cartData');
+
+const CartItem = require('./models/cart-item');
 
 app.use(bodyParser.urlencoded()); // It returns a middleware like any other, plus it does the WHOLE BODY PARSING thing we did manually earlier (in routes.js) 
 
@@ -49,6 +56,16 @@ app.set('view engine', 'ejs'); // telling expressJS we want to compile dynamic t
 
 app.set('views', 'views'); // telling expressJS where to find these templates
 
+// I want to store this user in a 'request' so we can use it anywhere in our App
+app.use((req, res, next) => {
+    User.findByPk(1)
+        .then(user => {
+            req.user = user;
+            next();
+        })
+        .catch(err => console.log(err));
+});
+
 app.use(shopRoutes);
 app.use('/admin', adminRoutes); // FILTERING: only routes starting with `/admin` will go in to the admin routes file
 // This allows us to add a specific url before all the routes of a particular file, & also only visiting those routes when the specific url is attached before the route's url
@@ -58,16 +75,62 @@ app.use('/admin', adminRoutes); // FILTERING: only routes starting with `/admin`
 
 app.use('/', errorController.get404page); // I've SPLIT THE CODE into `MVC`
 
-sequelize.sync()
-    .then(result => {
+// Before we sync our data to the DB, we wanna define our Models Relations first
 
-        // console.log(result);
+// PRODUCT - USER ASSOCIATION
+    Product.belongsTo(User, { constraints : true, onDelete : 'CASCADE' }); 
+        // So that when we delete a User, all Products associated to it also get deleted
+    User.hasMany(Product);
 
-        // I only want to Start my server Once I know Models are ready
-        app.listen(3000, () => {
-            console.log("Server is running at port 3000...");
-        });
-    })
-    .catch(err => {
-        console.log(err);
-    }); // Sync all defined models to the DB
+// USER - CART ASSOCIATION
+    Cart.belongsTo(User, { constraints : true, onDelete : 'CASCADE' });
+    User.hasOne(Cart);
+
+// USER - PRODUCT ASSOCIATION
+    // Many-to-Many Relation
+    // only works with an Intermediate Table (that connects/ basically stores a combination of them)
+    // thus, we use 'CartItem' Model
+    Cart.belongsToMany(Product, { through : CartItem });
+    Product.belongsToMany(Cart, { through : CartItem });
+
+// sequelize.sync({ force : true })    
+        // since we already have a 'products' table & will not override with new information. 
+        // THUS '{ force : true }' to override {not to be used much during development}
+    sequelize.sync({ force : true })
+        .then(result => {
+
+            // console.log(result);
+
+            return User.findByPk(1);
+            
+        })
+        .then(user => {
+            if(!user) {
+                return User.create({ name : "Vansh", email : "test@test.com" });
+            }
+            return Promise.resolve(user);
+        })
+        .then(user => {
+            // console.log(user);
+
+            // Check if the user already has a cart
+            return user.getCart()
+                .then(cart => {
+                    if (!cart) {
+                        return user.createCart();
+                    }
+                    return Promise.resolve(cart);
+                });
+
+        })
+        .then(cart => {
+            
+            // I only want to Start my server Once I know Models are ready
+            app.listen(3000, () => {
+                console.log("Server is running at port 3000...");
+            });
+
+        })
+        .catch(err => {
+            console.log(err);
+        }); // Sync all defined models to the DB
