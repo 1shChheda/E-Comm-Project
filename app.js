@@ -28,21 +28,15 @@ const path = require('path');
 
 const bodyParser = require('body-parser');
 
-const adminRoutes = require('./routes/admin');
-
-const shopRoutes = require('./routes/shop');
-
 const errorController = require('./controllers/404error');
 
 const sequelize = require('./utils/database');
 
-const Product = require('./models/productData');
+const Models = require('./utils/all_Models');
 
-const User = require('./models/userData');
+require('dotenv').config(); // necessary to load the environment variables from the ".env" file into the "process.env" object
 
-const Cart = require('./models/cartData');
-
-const CartItem = require('./models/cart-item');
+const PORT = process.env.PORT || 3000; // if "PORT" env variable will have any value set, it'll use that value ... else it'll use 5000
 
 app.use(bodyParser.urlencoded()); // It returns a middleware like any other, plus it does the WHOLE BODY PARSING thing we did manually earlier (in routes.js) 
 
@@ -58,7 +52,7 @@ app.set('views', 'views'); // telling expressJS where to find these templates
 
 // I want to store this user in a 'request' so we can use it anywhere in our App
 app.use((req, res, next) => {
-    User.findByPk(1)
+    Models.User.findByPk(1)
         .then(user => {
             req.user = user;
             next();
@@ -66,8 +60,11 @@ app.use((req, res, next) => {
         .catch(err => console.log(err));
 });
 
+const shopRoutes = require('./routes/shop');
 app.use(shopRoutes);
-app.use('/admin', adminRoutes); // FILTERING: only routes starting with `/admin` will go in to the admin routes file
+
+const adminRoutes = require('./utils/all_admin_routes');
+adminRoutes.All_admin_routes(app); // FILTERING: only routes starting with `/admin` will go in to the admin routes file
 // This allows us to add a specific url before all the routes of a particular file, & also only visiting those routes when the specific url is attached before the route's url
     
     // NOTE: as said before, ORDER MATTERS! But...
@@ -76,37 +73,22 @@ app.use('/admin', adminRoutes); // FILTERING: only routes starting with `/admin`
 app.use('/', errorController.get404page); // I've SPLIT THE CODE into `MVC`
 
 // Before we sync our data to the DB, we wanna define our Models Relations first
-
-// PRODUCT - USER ASSOCIATION
-    Product.belongsTo(User, { constraints : true, onDelete : 'CASCADE' }); 
-        // So that when we delete a User, all Products associated to it also get deleted
-    User.hasMany(Product);
-
-// USER - CART ASSOCIATION
-    Cart.belongsTo(User, { constraints : true, onDelete : 'CASCADE' });
-    User.hasOne(Cart);
-
-// USER - PRODUCT ASSOCIATION
-    // Many-to-Many Relation
-    // only works with an Intermediate Table (that connects/ basically stores a combination of them)
-    // thus, we use 'CartItem' Model
-    Cart.belongsToMany(Product, { through : CartItem });
-    Product.belongsToMany(Cart, { through : CartItem });
+require('./utils/all_Model_Relationship').Model_Relationship();
 
 // sequelize.sync({ force : true })    
         // since we already have a 'products' table & will not override with new information. 
         // THUS '{ force : true }' to override {not to be used much during development}
-    sequelize.sync({ force : true })
+    sequelize.sync()
         .then(result => {
 
             // console.log(result);
 
-            return User.findByPk(1);
+            return Models.User.findByPk(1);
             
         })
         .then(user => {
             if(!user) {
-                return User.create({ name : "Vansh", email : "test@test.com" });
+                return Models.User.create({ name : "Vansh", email : "test@test.com" });
             }
             return Promise.resolve(user);
         })
@@ -126,8 +108,8 @@ app.use('/', errorController.get404page); // I've SPLIT THE CODE into `MVC`
         .then(cart => {
             
             // I only want to Start my server Once I know Models are ready
-            app.listen(3000, () => {
-                console.log("Server is running at port 3000...");
+            app.listen(PORT, () => {
+                console.log(`Server is running at port ${PORT}...`);
             });
 
         })
