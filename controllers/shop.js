@@ -1,13 +1,11 @@
-const Product = require('../models/productData');
-
-const Cart = require('../models/cartData');
+const Models = require('../utils/all_Models');
 const { Sequelize } = require('sequelize');
 
 const getHomePage = (req, res, next) => {
 
     console.log("in the homepage");
 
-    Product.findAll()
+    Models.Product.findAll()
         .then(products => {
 
             res.render('shop/homepage', {
@@ -38,7 +36,7 @@ const getProducts = (req, res, next) => {
 
     // res.sendFile(filePath);
 
-    Product.findAll()
+    Models.Product.findAll()
         .then(products => {
 
             res.render('shop/product-list', {
@@ -55,7 +53,7 @@ const getProducts = (req, res, next) => {
 const getSeparateProduct = (req, res, next) => {
 
     const productId = req.params.productId;
-    Product.findByPk(productId)
+    Models.Product.findByPk(productId)
         .then(product => {
 
             // console.log(rows);
@@ -139,7 +137,7 @@ const postCart = (req, res, next) => {
                 return product;
             }
 
-            return Product.findByPk(productId)
+            return Models.Product.findByPk(productId)
 
         })
         .then(product => {
@@ -169,7 +167,6 @@ const postCartDeleteProduct = (req, res, next) => {
         .catch(err => console.log(err));
 };
   
-
 const getCheckOut = (req, res, next) => {
 
     console.log("in the checkout");
@@ -180,12 +177,52 @@ const getCheckOut = (req, res, next) => {
     });
 };
 
+const postOrder = (req, res, next) => {
+    let fetchedCart;
+    req.user.getCart()
+        .then(cart => {
+            fetchedCart = cart;
+            return cart.getProducts();
+        })
+        .then(products => {
+            req.user.createOrder()
+                .then(order => {
+                    return order.addProducts(products.map(product => {
+                        product.orderItem = {quantity : product.cartItem.quantity};
+                        return product;
+                    }));
+                })
+                .catch(err => console.log(err))
+        })
+        .then(result => {
+
+            // Drop the cart items
+            return fetchedCart.setProducts(null); 
+                    // used to drop the cart items
+                    // This disassociates all products from the cart
+            
+        })
+        .then(finalResult => {
+            res.redirect('/orders');
+        })
+        .catch(err => console.log(err));
+};
+
 const getOrders = (req, res, next) => {
 
-    res.render('shop/orders', {
-        pageTitle : "My Orders",
-        path : "/orders"
-    });
+    req.user.getOrders({include : ['products']}) // Eager Loading
+                // allows you to load and retrieve related data along with the main data in a single query
+        .then(orders => {
+            
+            res.render('shop/orders', {
+                pageTitle : "My Orders",
+                path : "/orders",
+                orders : orders
+            });
+
+        })
+        .catch(err => console.log(err))
+
 };
 
 module.exports = {
@@ -196,5 +233,6 @@ module.exports = {
     postCart : postCart,
     postCartDeleteProduct : postCartDeleteProduct,
     getOrders : getOrders,
+    postOrder : postOrder,
     getCheckOut : getCheckOut
 }

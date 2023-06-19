@@ -1,7 +1,7 @@
 const Models = require('../utils/all_Models');
 
 exports.Model_Relationship = () => {
-    // PRODUCT - USER ASSOCIATION
+// PRODUCT - USER ASSOCIATION
     Models.Product.belongsTo(Models.User, { constraints : true, onDelete : 'CASCADE' }); 
         // So that when we delete a User, all Products associated to it also get deleted
     Models.User.hasMany(Models.Product);
@@ -16,4 +16,16 @@ exports.Model_Relationship = () => {
     // thus, we use 'CartItem' Model
     Models.Cart.belongsToMany(Models.Product, { through : Models.CartItem });
     Models.Product.belongsToMany(Models.Cart, { through : Models.CartItem });
+
+// USER - ORDER ASSOCIATION
+    // One-to-Many Relationship 
+    // { One User - Multiple Orders }
+    Models.Order.belongsTo(Models.User, { constraints : true, onDelete : 'CASCADE' });
+    Models.User.hasMany(Models.Order);
+
+// ORDER - PRODUCT ASSOCIATION
+
+    Models.Order.belongsToMany(Models.Product, { through : Models.OrderItem });
+    Models.Product.belongsToMany(Models.Order, { through : Models.OrderItem });
+
 }
