@@ -633,4 +633,154 @@ const Product = require('./models/productData');
             // UPDATE (U)   
                 // Retrieve the record you want to update using one of the READ methods
                 // Modify the desired fields of the retrieved record object
-                // Call the "save()" method on the record object to persist the changes to the database
+                // 6) Call the "save()" method on the record object to persist the changes to the database.
+
+            // DELETE (D)
+                // To delete a record from the database using Sequelize, follow these steps:
+
+                // Retrieve the record you want to delete using one of the read methods.
+                // 7) Call the "destroy()" method on the record object to remove it from the database
+    
+
+        // Association 
+
+            // Product <---------------------------Has Many--------------------------- User
+            //    |                                                                     |
+            //    |                                                                     |
+            //    |                                                                     |
+            //    ---------Belongs to Many------------> Cart <------------Has One--------
+            //    |                                                                     |
+            //    |                                                                     |
+            //    |                                                                     |
+            //    ---------Belongs to Many-----------> Order <------------Has Many-------
+
+
+// ----------------------------------------------------------------------
+    // REST APIs
+
+        // What is it? Why is it required?
+
+            // Not Every FRONTEND (UI) requires HTML Pages { like we've used so far }
+
+                // for Example:
+                    // Single Page Web Apps: 
+                        // Udemy Course Website
+
+                            // When we go-through OR click on different sections of the page, we notice that the "reload icon" of the browser stays still.
+
+                            // i.e. all these parts do re-render "without the page reloading / page being refreshed"
+
+                            // Reason?
+
+                                // The entire page is rendered through "Browser Side Javascript" (not Server Side Javascript)
+
+                                // & this JS code can manipulate the DOM
+
+                    // so basically what happens is: 
+                    // you only fetch one inital HTML page, that does not really contain a lot real HTML content, 
+                    // but that does load all these JS script files,
+                    // & then these JS scripts reach out to some Backend API, to a Restful API & only fetch the data they need to work with, to then re-render the UI
+                    
+            // Core Logic : We only want to exchange the data from the Backend, & not render HTML pages
+
+                // --> Transfer Data instead of User Interfaces
+                
+
+        // "RE"presentational "S"tate "T"ransfer (REST)
+
+        // NOTE : Only the response (& request data) changes, NOT the general server-side logic !
+
+        // Data Formats :
+            // HTML
+            // Plain Text
+            // XML
+            // JSON (recommended)
+
+        // HTTP Method & Path   --->   API Endpoints
+
+            // HTTP methods (HTTP Verbs)
+
+                // GET (get a Resource from the Server)
+
+                // POST (post a Resource to the Server {i.e. create or append Resource})
+
+                // PUT (put a Resource onto the Server {i.e. create or overwrite a Resource})
+
+                // PATCH (Update parts of an existing Resource on the Server)
+
+                // DELETE (Delete a Resource on the Server)
+
+                // OPTIONS (Determine whether follow-up Request is allowed {sent automatically})
+
+// ----------------------------------------------------------------------
+
+    // MongoDB
+
+        // Why was it Built? 
+            // for Large-Scale Applications
+            // To Store & Work with Lots & Lots of Data 
+            // It's really Fast
+
+        // As we know, It does not have Relations (like SQL)
+
+            // Therefore, there are lot of cases of data duplication
+
+            // there are many times we need to work with that data a lot, & Hence it would change a lot& you'll have to manually update it in all duplicate places
+
+            // using Embedded/Nested Documents is not Ideal here
+
+            // So, we use "References" here instead
+
+// ----------------------------------------------------------------------
+
+    // SetUp & Use MongoDB with NodeJS
+
+        // We can install MongoDB locally, by downloading it from "Community Server" & following instructions
+
+        // OR
+
+        // Use a "Cloud Solution" instead (which is more realistic while deployment + it's free)
+            // --> MongoDB Atlas 
+
+        // Choose the "M0 - FREE" Cluster
+
+        // After creating the Cluster,
+            // under "SECURITY" --> create a User --> "with `User Privileges` => "Read and Write to any Database"
+
+            // also look into "IP Whitelist"
+                // contains all the IP addresses that are allowed to connect to your MongoDB Server
+
+                // "Add your Current IP Address"
+                    // Node runs locally on your machine --> so your Node app will have this IP Address
+
+                // When we Deploy the Node app --> use `IP Address of your Server`
+
+            // Now connect your application with MongoDB
+                // mongodb+srv://vanshchheda:<password>@node-ecommerce-cluster.cqpze2d.mongodb.net/?retryWrites=true&w=majority
+
+                
+                // const { MongoClient, ServerApiVersion } = require('mongodb');
+                // const uri = "mongodb+srv://vanshchheda:<password>@node-ecommerce-cluster.cqpze2d.mongodb.net/?retryWrites=true&w=majority";
+
+                // // Create a MongoClient with a MongoClientOptions object to set the Stable API version
+                // const client = new MongoClient(uri, {
+                // serverApi: {
+                //     version: ServerApiVersion.v1,
+                //     strict: true,
+                //     deprecationErrors: true,
+                // }
+                // });
+
+                // async function run() {
+                // try {
+                //     // Connect the client to the server	(optional starting in v4.7)
+                //     await client.connect();
+                //     // Send a ping to confirm a successful connection
+                //     await client.db("admin").command({ ping: 1 });
+                //     console.log("Pinged your deployment. You successfully connected to MongoDB!");
+                // } finally {
+                //     // Ensures that the client will close when you finish/error
+                //     await client.close();
+                // }
+                // }
+                // run().catch(console.dir);

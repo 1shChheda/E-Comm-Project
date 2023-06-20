@@ -27,11 +27,12 @@ const postAddProduct = (req, res, next) => {
     const description = req.body.description;
     const price = req.body.price;
     
-    Product.create({
+    // MAGIC ASSOCIATION METHOD!
+    req.user.createProduct({ // To create a Product under a User (i.e. connect a product to a user)
         title : title,
         price : price,
         description : description,
-        imageUrl : imageUrl
+        imageUrl : imageUrl,
     })
         .then(() => {
             res.redirect('/'); // much more convenient than conventional code used earlier
@@ -59,9 +60,15 @@ const getEditProduct = (req, res, next) => {
 
     const productId = req.params.productId;
 
-    Product.findByPk(productId)
-        .then(product => {
+    // TWO FILTERS :
+        // 1) we want products belonging to a particular user
+        // 2) we want the product which was selected for Editing
+        // thus, we use MAGIC ASSOCIATION again... (previously used in 'postAddProduct')
+    req.user.getProducts({ where : { id : productId } }) // we get back an ARRAY (even if 1 product)
+    // Product.findByPk(productId)
+        .then(products => {
 
+            const product = products[0];
             if(!product) {
                 res.status(404).render('404-error', {
                     pageTitle: "Page Not Found",
@@ -130,7 +137,10 @@ const getProducts = (req, res, next) => {
 
     console.log("in the admin/products page");
     
-    Product.findAll()
+    // ONE FILTERS :
+        // 1) we want all products which belong only to a particular user
+    req.user.getProducts()
+    // Product.findAll()
         .then(products => {
             
             res.render('admin/products',{ 
