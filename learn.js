@@ -756,31 +756,161 @@ const Product = require('./models/productData');
                 // When we Deploy the Node app --> use `IP Address of your Server`
 
             // Now connect your application with MongoDB
-                // mongodb+srv://vanshchheda:<password>@node-ecommerce-cluster.cqpze2d.mongodb.net/?retryWrites=true&w=majority
+                // use the MongoDB URI (srv) --> to connect to the MongoDB & particular database
 
+        // Basic Connection Setup in "utils/database.js" file :
+
+                const { MongoClient } = require('mongodb');
+
+                let _db;
                 
-                // const { MongoClient, ServerApiVersion } = require('mongodb');
-                // const uri = "mongodb+srv://vanshchheda:<password>@node-ecommerce-cluster.cqpze2d.mongodb.net/?retryWrites=true&w=majority";
+                const mongoConnect = callback => {
+                MongoClient.connect(process.env.DB_URI)
+                    .then(client => {
+                        _db = client.db();
+                    })
+                    .catch(err => {
+                    console.log(err);
+                    throw err;
+                    });
+                
+                    callback();
+                };
+                
+                const getDb = () => {
+                if(_db) {
+                    return _db;
+                }
+                throw "No Database Found!"
+                };
+                
+                module.exports = {
+                    mongoConnect : mongoConnect,
+                    getDb : getDb
+                }
 
-                // // Create a MongoClient with a MongoClientOptions object to set the Stable API version
-                // const client = new MongoClient(uri, {
-                // serverApi: {
-                //     version: ServerApiVersion.v1,
-                //     strict: true,
-                //     deprecationErrors: true,
-                // }
-                // });
+// ----------------------------------------------------------------------
 
-                // async function run() {
-                // try {
-                //     // Connect the client to the server	(optional starting in v4.7)
-                //     await client.connect();
-                //     // Send a ping to confirm a successful connection
-                //     await client.db("admin").command({ ping: 1 });
-                //     console.log("Pinged your deployment. You successfully connected to MongoDB!");
-                // } finally {
-                //     // Ensures that the client will close when you finish/error
-                //     await client.close();
-                // }
-                // }
-                // run().catch(console.dir);
+    // CRUD Operations With MongoDB
+
+        // "WRITE" Operations --> insert, modify, or delete documents in our MongoDB database
+
+            // Insert Data
+
+                // insertOne() --> to insert a single document 
+
+                    const database = db.getDb();
+
+                    const Product = database.collection("products");
+
+                    const userDoc = { name : "Vansh", age : 20, emailAddress : "test@test.com", country : "India" }
+
+                    Product.insertOne(userDoc)
+                        .then(result => {
+                            console.log("Document Added!");
+                        })
+                        .catch(err => console.log(err))
+
+                // insertMany() --> to insert many documents
+
+                    const database = db.getDb();
+
+                    const Product = database.collection("products");
+
+                    const usersDoc = [
+                        { name : "Vansh", age : 20, emailAddress : "test01@test.com", country : "India" },
+                        { name : "Darshil", age : 22, emailAddress : "test02@test.com", country : "Delhi" },
+                        { name : "Kimaya", age : 19, emailAddress : "test03@test.com", country : "Lucknow" }
+                    ];
+
+                    Product.insertMany(usersDoc)
+                        .then(result => {
+                            console.log("Document(s) Added!");
+                        })
+                        .catch(err => console.log(err))
+
+            // Delete Data
+
+                // deleteOne() --> to delete a single document
+
+                // deleteMany() --> to delete more than one document
+
+            // Retrieve Data
+
+                // If you want to retrieve results based on a certain set of criteria, use "find()" or "findOne()"
+                    // find() 
+                        // --> to find All Documents matching the given Query
+                        // returns a "Cursor" object that represents the result set of the query
+                        // Convert the "Cursor" object into an Array { using ".toArray()" } & then use Promise Chaining to return the documents
+                    
+                    // findOne()
+                        // --> to find the first matching document (or Single Document) matching the Query
+                        // returns the matching document or "null" if there are no matches
+
+
+        // Comparison Operators in MongoDB 
+
+            const doc = {
+                price : {
+                    $gt : 50,
+                    $lte : 200
+                },
+                category : {
+                    $nin : ["Healthcare", "Education", "Defence"]
+                }
+            }
+
+                // 1) Equality Operators:
+
+                //     $eq: Matches values that are equal to a specified value.
+                //         Example: { field: { $eq: value } }
+                //         Explanation: Selects documents where the value of field is equal to value.
+
+                //     $ne: Matches values that are not equal to a specified value.
+                //         Example: { field: { $ne: value } }
+                //         Explanation: Selects documents where the value of field is not equal to value.
+
+                // 2) Comparison Operators:
+
+                //     $gt: Matches values that are greater than a specified value.
+                //         Example: { field: { $gt: value } }
+                //         Explanation: Selects documents where the value of field is greater than value.
+
+                //     $gte: Matches values that are greater than or equal to a specified value.
+                //         Example: { field: { $gte: value } }
+                //         Explanation: Selects documents where the value of field is greater than or equal to value.
+
+                //     $lt: Matches values that are less than a specified value.
+                //         Example: { field: { $lt: value } }
+                //         Explanation: Selects documents where the value of field is less than value.
+
+                //     $lte: Matches values that are less than or equal to a specified value.
+                //         Example: { field: { $lte: value } }
+                //         Explanation: Selects documents where the value of field is less than or equal to value.
+
+                // 3) Inclusion/Exclusion Operators:
+
+                //     $in: Matches any of the values specified in an array.
+                //         Example: { field: { $in: [value1, value2, ...] } }
+                //         Explanation: Selects documents where the value of field matches any value in the specified array.
+
+                //     $nin: Matches none of the values specified in an array.
+                //         Example: { field: { $nin: [value1, value2, ...] } }
+                //         Explanation: Selects documents where the value of field does not match any value in the specified array.
+
+                // 4) Existence Operators:
+
+                //     $exists: Matches documents that have the specified field.
+                //         Example: { field: { $exists: true } }
+                //         Explanation: Selects documents where the field exists.
+
+                //     $type: Matches documents based on the BSON type of a field.
+                //         Example: { field: { $type: "type" } }
+                //         Explanation: Selects documents where the field has the specified BSON type.
+
+            // What's the USE Of these Operators ? 
+                // These operators can be used in various query operations such as 
+                    // find, 
+                    // update, and 
+                    // delete 
+                // --> to filter documents based on specific conditions

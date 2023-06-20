@@ -27,17 +27,14 @@ const postAddProduct = (req, res, next) => {
     const description = req.body.description;
     const price = req.body.price;
     
-    // MAGIC ASSOCIATION METHOD!
-    req.user.createProduct({ // To create a Product under a User (i.e. connect a product to a user)
-        title : title,
-        price : price,
-        description : description,
-        imageUrl : imageUrl,
-    })
-        .then(() => {
-            res.redirect('/'); // much more convenient than conventional code used earlier
+    const product = new Product(title, price, description, imageUrl);
+
+    product.save()
+        .then(result => {
+            console.log("Product Created!");
+            res.redirect("/admin/products");
         })
-        .catch(err => console.log(err));
+        .catch(err => console.log(err))
     
 };
 
@@ -139,8 +136,8 @@ const getProducts = (req, res, next) => {
     
     // ONE FILTERS :
         // 1) we want all products which belong only to a particular user
-    req.user.getProducts()
-    // Product.findAll()
+    
+    Product.fetchAll()
         .then(products => {
             
             res.render('admin/products',{ 
@@ -157,8 +154,8 @@ const getProducts = (req, res, next) => {
 module.exports = {
     getAddProduct : getAddProduct,
     postAddProduct : postAddProduct,
-    getEditProduct : getEditProduct,
-    postEditProduct : postEditProduct,
-    postDeleteProduct : postDeleteProduct,
+    // getEditProduct : getEditProduct,
+    // postEditProduct : postEditProduct,
+    // postDeleteProduct : postDeleteProduct,
     getProducts : getProducts
 }

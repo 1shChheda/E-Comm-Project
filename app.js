@@ -30,9 +30,7 @@ const bodyParser = require('body-parser');
 
 const errorController = require('./controllers/404error');
 
-const sequelize = require('./utils/database');
-
-const Models = require('./utils/all_Models');
+const db = require('./utils/database');
 
 require('dotenv').config(); // necessary to load the environment variables from the ".env" file into the "process.env" object
 
@@ -50,16 +48,6 @@ app.set('view engine', 'ejs'); // telling expressJS we want to compile dynamic t
 
 app.set('views', 'views'); // telling expressJS where to find these templates
 
-// I want to store this user in a 'request' so we can use it anywhere in our App
-app.use((req, res, next) => {
-    Models.User.findByPk(1)
-        .then(user => {
-            req.user = user;
-            next();
-        })
-        .catch(err => console.log(err));
-});
-
 const shopRoutes = require('./routes/shop');
 app.use(shopRoutes);
 
@@ -72,47 +60,11 @@ adminRoutes.All_admin_routes(app); // FILTERING: only routes starting with `/adm
 
 app.use('/', errorController.get404page); // I've SPLIT THE CODE into `MVC`
 
-// Before we sync our data to the DB, we wanna define our Models Relations first
-require('./utils/all_Model_Relationship').Model_Relationship();
+// Connecting to the database
+db.mongoConnect(() => {
 
-// sequelize.sync({ force : true })    
-        // since we already have a 'products' table & will not override with new information. 
-        // THUS '{ force : true }' to override {not to be used much during development}
-    sequelize.sync()
-        .then(result => {
+    app.listen(PORT, () => {
+        console.log(`Server is running at port ${PORT}...`);
+    });
 
-            // console.log(result);
-
-            return Models.User.findByPk(1);
-            
-        })
-        .then(user => {
-            if(!user) {
-                return Models.User.create({ name : "Vansh", email : "test@test.com" });
-            }
-            return Promise.resolve(user);
-        })
-        .then(user => {
-            // console.log(user);
-
-            // Check if the user already has a cart
-            return user.getCart()
-                .then(cart => {
-                    if (!cart) {
-                        return user.createCart();
-                    }
-                    return Promise.resolve(cart);
-                });
-
-        })
-        .then(cart => {
-            
-            // I only want to Start my server Once I know Models are ready
-            app.listen(PORT, () => {
-                console.log(`Server is running at port ${PORT}...`);
-            });
-
-        })
-        .catch(err => {
-            console.log(err);
-        }); // Sync all defined models to the DB
+});

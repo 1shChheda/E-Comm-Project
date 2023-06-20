@@ -1,11 +1,10 @@
-const Models = require('../utils/all_Models');
-const { Sequelize } = require('sequelize');
+const Product = require('../models/productData');
 
 const getHomePage = (req, res, next) => {
 
     console.log("in the homepage");
 
-    Models.Product.findAll()
+    Product.fetchAll()
         .then(products => {
 
             res.render('shop/homepage', {
@@ -36,7 +35,7 @@ const getProducts = (req, res, next) => {
 
     // res.sendFile(filePath);
 
-    Models.Product.findAll()
+    Product.fetchAll()
         .then(products => {
 
             res.render('shop/product-list', {
