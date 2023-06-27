@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,700');
+@import url('https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap');
 
 * {
   box-sizing: border-box;
@@ -7,7 +7,7 @@
 body {
   padding: 0;
   margin: 0;
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 main {
@@ -33,8 +33,8 @@ form {
 
 .main-header {
   width: 100%;
-  height: 3.5rem;
-  background-color: #00695c;
+  height: 4rem;
+  background-color: #050B26;
   padding: 0 1.5rem;
   display: flex;
   align-items: center;
@@ -61,12 +61,13 @@ form {
 .main-header__item a {
   text-decoration: none;
   color: white;
+  font-size: 1.2rem;
 }
 
 .main-header__item a:hover,
 .main-header__item a:active,
 .main-header__item a.active {
-  color: #ffeb3b;
+  color: #FBC02D;
 }
 
 .mobile-nav {
@@ -110,29 +111,25 @@ form {
 .mobile-nav__item a:active,
 .mobile-nav__item a:hover,
 .mobile-nav__item a.active {
-  background: #00695c;
+  background: #050B26;
   color: white;
   border-radius: 3px;
 }
 
-#side-menu-toggle {
-  border: 1px solid white;
-  font: inherit;
-  padding: 0.5rem;
-  display: block;
+.burger-icon {
+  border: none;
   background: transparent;
   color: white;
+  font-size: 1.5rem;
+  padding: 0.5rem;
   cursor: pointer;
+  display: flex;
+  align-items: center;
 }
 
-#side-menu-toggle:focus {
-  outline: none;
-}
-
-#side-menu-toggle:active,
-#side-menu-toggle:hover {
-  color: #ffeb3b;
-  border-color: #ffeb3b;
+.burger-icon i {
+  font-size: 1.5rem;
+  margin-right: 0.5rem;
 }
 
 .backdrop {
@@ -154,7 +151,15 @@ form {
 }
 
 .card {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
+  box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+  transition: transform 0.3s;
+  width: 20rem;
+  margin-bottom: 2rem;
+  perspective: 1000px;
+}
+
+.card:hover {
+  transform: translateY(-5px) rotateX(10deg);
 }
 
 .card__header,
@@ -162,11 +167,19 @@ form {
   padding: 1rem;
 }
 
-.card__header h1,
+.card__header h1 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
 .card__content h1,
-.card__content h2,
-.card__content p {
+.card__content h2{
   margin: 0;
+}
+
+.card__content p {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .card__image {
@@ -178,13 +191,13 @@ form {
 }
 
 .card__actions {
-  padding: 1rem;
+  padding: 0.5rem;
   text-align: center;
 }
 
 .card__actions button,
 .card__actions a {
-  margin: 0 0.25rem;
+  margin: 0.25rem;
 }
 
 .btn {
@@ -192,8 +205,8 @@ form {
   padding: 0.25rem 1rem;
   text-decoration: none;
   font: inherit;
-  border: 1px solid #00695c;
-  color: #00695c;
+  border: 1px solid #FBC02D;
+  color: #FBC02D;
   background: white;
   border-radius: 3px;
   cursor: pointer;
@@ -201,7 +214,7 @@ form {
 
 .btn:hover,
 .btn:active {
-  background-color: #00695c;
+  background-color: #FBC02D;
   color: white;
 }
 
@@ -223,5 +236,13 @@ form {
 
   #side-menu-toggle {
     display: none;
+  }
+
+  .card {
+    width: 100%;
+  } 
+
+  .card:hover {
+    transform: translateY(-5px);
   }
 }
