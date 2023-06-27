@@ -30,7 +30,7 @@
 
             <!-- This hidden input field is just used to send the `product.id` info IN THE REQUEST BODY, when we POST THE EDITED PRODUCT -->
             <% if (editing) { %>
-                <input type="hidden" name="productId" value="<%= product.id %>"> 
+                <input type="hidden" name="productId" value="<%= product._id %>"> 
 
             <% } %>
 

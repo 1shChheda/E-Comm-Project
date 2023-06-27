@@ -52,10 +52,8 @@ const getProducts = (req, res, next) => {
 const getSeparateProduct = (req, res, next) => {
 
     const productId = req.params.productId;
-    Models.Product.findByPk(productId)
+    Product.findById(productId)
         .then(product => {
-
-            // console.log(rows);
             res.render('shop/product-detail', {
                 pageTitle : `${product.title} - Details`,
                 path : `/products`,

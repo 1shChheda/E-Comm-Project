@@ -847,6 +847,29 @@ const Product = require('./models/productData');
                         // --> to find the first matching document (or Single Document) matching the Query
                         // returns the matching document or "null" if there are no matches
 
+            // Change Data
+
+                // We can change documents in a MongoDB collection using either "update" or "replace" operations.
+
+                // Difference :
+                    // Update operations mutate specified fields in one or more documents and leave other fields and values unchanged
+                    // Replace operations remove all existing fields in one or more documents and substitute them with specified fields and values
+
+                    // Update Ops
+                        // updateOne() --> takes minimum two arguments 
+                            // --> 1st Argument : "filter" which defines which document we want to update {a JS Object}
+                            // --> 2nd Argument : {a JS Object} to tell how do you want to update the document
+                                // Update Operators : (for 2nd Argument)
+                                    // $set: replaces the value of a field with a specified one
+
+                                    // $inc: increments or decrements field values
+                                    
+                                    // $rename: renames fields itself
+                                    
+                                    // $unset: removes fields itself
+                                    
+                                    // $mul: multiplies a field value by a specified number
+
 
         // Comparison Operators in MongoDB 
 

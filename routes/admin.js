@@ -28,9 +28,9 @@ router.post('/add-product', adminController.postAddProduct); // I've SPLIT THE C
     // in such a setup, where our paths, in a router file, start with the same part or same segment,...
         // we can take that segment & mention it in the app.js file...{check it out}
 
-// router.get('/edit-product/:productId', adminController.getEditProduct);
+router.get('/edit-product/:productId', adminController.getEditProduct);
 
-// router.post('/edit-product', adminController.postEditProduct);
+router.post('/edit-product', adminController.postEditProduct);
 
 router.get('/products', adminController.getProducts);
 

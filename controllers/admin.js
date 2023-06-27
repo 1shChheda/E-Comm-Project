@@ -1,5 +1,4 @@
 const Product = require('../models/productData');
-
 const getAddProduct = (req, res, next) => {
     console.log("in the admin/add-products page");
 
@@ -57,15 +56,8 @@ const getEditProduct = (req, res, next) => {
 
     const productId = req.params.productId;
 
-    // TWO FILTERS :
-        // 1) we want products belonging to a particular user
-        // 2) we want the product which was selected for Editing
-        // thus, we use MAGIC ASSOCIATION again... (previously used in 'postAddProduct')
-    req.user.getProducts({ where : { id : productId } }) // we get back an ARRAY (even if 1 product)
-    // Product.findByPk(productId)
-        .then(products => {
-
-            const product = products[0];
+    Product.findById(productId)
+        .then(product => {
             if(!product) {
                 res.status(404).render('404-error', {
                     pageTitle: "Page Not Found",
@@ -88,23 +80,13 @@ const getEditProduct = (req, res, next) => {
 const postEditProduct = (req, res, next) => {
     const productId = req.body.productId;
     const updatedTitle = req.body.title;
-    const updatedImageUrl = req.body.imageUrl;
-    const updatedDescription = req.body.description;
     const updatedPrice = req.body.price;
+    const updatedDescription = req.body.description;
+    const updatedImageUrl = req.body.imageUrl;
 
-    Product.findByPk(productId)
-        .then(product => {
-
-            // All these changes are implemented on our Local Machine
-            product.title = updatedTitle,
-            product.price = updatedPrice,
-            product.description = updatedDescription,
-            product.imageUrl = updatedImageUrl
-
-            // To save these changes in our database, we simply use:
-            return product.save();
-
-        })
+    const product = new Product(productId, updatedTitle, updatedPrice, updatedDescription, updatedImageUrl)
+    // To save these changes in our database, we simply use:
+    return product.save()
         .then(result => {
             console.log("Product Updated!");
             res.redirect('/admin/products'); // we shifted it here because we want the updated page to load after the Updation has been performed
@@ -154,8 +136,8 @@ const getProducts = (req, res, next) => {
 module.exports = {
     getAddProduct : getAddProduct,
     postAddProduct : postAddProduct,
-    // getEditProduct : getEditProduct,
-    // postEditProduct : postEditProduct,
+    getEditProduct : getEditProduct,
+    postEditProduct : postEditProduct,
     // postDeleteProduct : postDeleteProduct,
     getProducts : getProducts
 }
