@@ -32,6 +32,8 @@ const errorController = require('./controllers/404error');
 
 const db = require('./utils/database');
 
+const Models = require('./utils/all_Models');
+
 require('dotenv').config(); // necessary to load the environment variables from the ".env" file into the "process.env" object
 
 const PORT = process.env.PORT || 3000; // if "PORT" env variable will have any value set, it'll use that value ... else it'll use 5000
@@ -47,6 +49,15 @@ app.use(express.static(path.join(__dirname, 'public'))); // for serving static f
 app.set('view engine', 'ejs'); // telling expressJS we want to compile dynamic templates with the ejs engine
 
 app.set('views', 'views'); // telling expressJS where to find these templates
+
+app.use((req, res, next) => {
+    Models.User.findById('649d7b3fe81b4f425b935f13')
+        .then(user => {
+            req.user = user
+            next();
+        })
+        .catch(err => console.log(err))
+});
 
 const shopRoutes = require('./routes/shop');
 app.use(shopRoutes);

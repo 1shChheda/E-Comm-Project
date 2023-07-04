@@ -1,4 +1,4 @@
-const Product = require('../models/productData');
+const Models = require('../utils/all_Models');
 const getAddProduct = (req, res, next) => {
     console.log("in the admin/add-products page");
 
@@ -26,7 +26,7 @@ const postAddProduct = (req, res, next) => {
     const description = req.body.description;
     const price = req.body.price;
     
-    const product = new Product(title, price, description, imageUrl);
+    const product = new Models.Product(null, title, price, description, imageUrl, req.user._id);
 
     product.save()
         .then(result => {
@@ -56,7 +56,7 @@ const getEditProduct = (req, res, next) => {
 
     const productId = req.params.productId;
 
-    Product.findById(productId)
+    Models.Product.findById(productId)
         .then(product => {
             if(!product) {
                 res.status(404).render('404-error', {
@@ -84,7 +84,7 @@ const postEditProduct = (req, res, next) => {
     const updatedDescription = req.body.description;
     const updatedImageUrl = req.body.imageUrl;
 
-    const product = new Product(productId, updatedTitle, updatedPrice, updatedDescription, updatedImageUrl)
+    const product = new Models.Product(productId, updatedTitle, updatedPrice, updatedDescription, updatedImageUrl, req.user._id)
     // To save these changes in our database, we simply use:
     return product.save()
         .then(result => {
@@ -100,12 +100,8 @@ const postDeleteProduct = (req, res, next) => {
 
     const productId = req.body.productId;
 
-    Product.findByPk(productId)
-        .then(product => {
-            return product.destroy();
-        })
+    Models.Product.deleteById(productId)
         .then(results => {
-            console.log('Product Destroyed!');
             res.redirect('/admin/products');
         })
         .catch(err => console.log(err));
@@ -119,7 +115,7 @@ const getProducts = (req, res, next) => {
     // ONE FILTERS :
         // 1) we want all products which belong only to a particular user
     
-    Product.fetchAll()
+    Models.Product.fetchAll()
         .then(products => {
             
             res.render('admin/products',{ 
@@ -138,6 +134,6 @@ module.exports = {
     postAddProduct : postAddProduct,
     getEditProduct : getEditProduct,
     postEditProduct : postEditProduct,
-    // postDeleteProduct : postDeleteProduct,
+    postDeleteProduct : postDeleteProduct,
     getProducts : getProducts
 }

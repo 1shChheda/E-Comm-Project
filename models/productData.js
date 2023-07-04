@@ -2,12 +2,13 @@ const mongodb = require('mongodb');
 const db = require('../utils/database'); // to gain access to DB & also INTERACT with it
 
 class Product {
-    constructor(id, title, price, description, imageUrl){
-        this._id = new mongodb.ObjectId(id)
+    constructor(id, title, price, description, imageUrl, userId){
+        this._id = id ? new mongodb.ObjectId(id) : null;
         this.title = title;
         this.price = price;
         this.description = description;
         this.imageUrl = imageUrl;
+        this.userId = userId;
     }
 
     save() {
@@ -55,6 +56,16 @@ class Product {
                 return product;
             })
             .catch(err => console.log(err)) 
+    }
+
+    static deleteById(productId) {
+        const database = db.getDb();
+
+        return database.collection('products').deleteOne({ _id : new mongodb.ObjectId(productId) })
+            .then(product => {
+                console.log("Deleted Product!");
+            })
+            .catch(err => console.log(err))
     }
 }
 

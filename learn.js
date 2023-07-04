@@ -859,16 +859,41 @@ const Product = require('./models/productData');
                         // updateOne() --> takes minimum two arguments 
                             // --> 1st Argument : "filter" which defines which document we want to update {a JS Object}
                             // --> 2nd Argument : {a JS Object} to tell how do you want to update the document
+
                                 // Update Operators : (for 2nd Argument)
+
                                     // $set: replaces the value of a field with a specified one
+                                        // db.collection.updateOne(
+                                        //     { <filter> },
+                                        //     { $set: { <update> } }
+                                        // )
 
                                     // $inc: increments or decrements field values
+                                        // db.collection.updateOne(
+                                        //     { <filter> },
+                                        //     { $inc: { <field>: <value> } }
+                                        // )
                                     
                                     // $rename: renames fields itself
-                                    
+                                        // db.collection.updateOne(
+                                        //     { <filter> },
+                                        //     { $rename: { <oldField>: <newField> } }
+                                        // )
+
+                                    // $push : to add an Element to an Array
+                                        // db.collection.updateOne(
+                                        //     { <filter> },
+                                        //     { $push: { <arrayField>: <element> } }
+                                        // )                                     
                                     // $unset: removes fields itself
                                     
                                     // $mul: multiplies a field value by a specified number
+
+                        // updateMany() --> to update multiple documents that match the specified filter with the given update
+                            // db.collection.updateMany(
+                            //     { <filter> },
+                            //     { $set: { <update> } }
+                            // )
 
 
         // Comparison Operators in MongoDB 
