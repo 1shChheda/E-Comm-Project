@@ -28,7 +28,8 @@
                                     <a href="/products/<%= product._id %>" class="btn">Details</a>
                                     <form action="/cart" method="POST">
                                         <button class="btn">Add to Cart</button>
-                                        <input type="hidden" name="productId" value="<%= product.id %>">
+                                        <input type="hidden" name="productId" value="<%= product._id %>"> 
+                                        <!-- This hidden input field is just used to send the `product.id` info IN THE REQUEST BODY, when we click `Enter` -->
                                     </form>
                                 </div>
                             </article>

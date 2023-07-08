@@ -53,7 +53,7 @@ app.set('views', 'views'); // telling expressJS where to find these templates
 app.use((req, res, next) => {
     Models.User.findById('649d7b3fe81b4f425b935f13')
         .then(user => {
-            req.user = user
+            req.user = new Models.User(user._id, user.username, user.email, user.cart);
             next();
         })
         .catch(err => console.log(err))
