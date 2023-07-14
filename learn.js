@@ -962,3 +962,86 @@ const Product = require('./models/productData');
                     // update, and 
                     // delete 
                 // --> to filter documents based on specific conditions
+
+// ----------------------------------------------------------------------
+    // Firebase Token Authentication
+        // I had applied this in an another project, so thought to document my understanding of it over here, for future understanding
+
+        // 1) Generating Firebase Key:
+
+            // A service account key file (lemo-project-2143f-firebase-adminsdk-5e83x-f80230b3e2.json) is generated from the Firebase console. This key file contains the necessary credentials for authenticating and accessing Firebase services
+        
+        // 2) firebaseAdmin.js (in Utils folder):
+
+            // The firebase-admin package is imported, which provides the necessary functionality to interact with Firebase services on the server-side
+            // The service account key file is required using require() and assigned to the serviceAccount constant
+            // The admin.initializeApp() method is called to initialize the Firebase Admin SDK with the provided service account credentials
+            // The admin object is exported to make it accessible in other modules
+            // CODE:
+                const admin = require('firebase-admin');
+
+                const serviceAccount = require('../lemo-project-2143f-firebase-adminsdk-5e83x-f80230b3e2.json');
+
+                admin.initializeApp({
+                credential: admin.credential.cert(serviceAccount)
+                });
+
+                module.exports = admin;
+
+        // 3) tokenVerify.js:
+
+            // The firebaseAdmin module (FirebaseAdmin.js) is imported, which provides the initialized admin object for interacting with Firebase services
+            // The tokenVerify middleware function is defined, which is responsible for verifying the Firebase ID token sent with the request
+            // The token is extracted from the request headers or body
+            // If the token is missing, an error response is sent back indicating unauthorized access
+            // The admin.auth().verifyIdToken() method is used to verify the Firebase ID token. If the verification is successful, the decoded token is obtained, and the uid property is assigned to the req object for further processing
+            // If there is an error during token verification, an error response is sent back
+            // CODE:
+                const admin = require('../../Utils/firebaseAdmin');
+                const logger = require("../../Utils/logger");
+
+                const tokenVerify = async (req, res, next) => {
+                    try {
+                        // to get the firebase ID token from the request headers or body
+                        const token = req.headers.authorization || req.body.token;
+
+                        if (!token) {
+                            const RESPONSE = { error: "Unauthorized Access" };
+                            logger.writeLog(req, RESPONSE, "view", "user");
+                            return res.status(401).json(RESPONSE);
+                        }
+
+                        // to verify the firebase ID token
+                        const decodedToken = await admin.auth().verifyIdToken(token);
+                        logger.writeLog(req, decodedToken, "view", "user");
+                        console.log(decodedToken);
+                        req.uid = decodedToken.uid; 
+
+                        next();
+                    } catch (error) {
+                        const RESPONSE = { error: `Token Verification Error: ${error}` };
+                        logger.writeLog(req, RESPONSE, "view", "user");
+                        return res.status(401).json(RESPONSE);
+                    }
+                };
+
+                module.exports = tokenVerify;
+
+            // 4) authRoute.js:
+
+                // The express module is imported, and a router object is created using express.Router()
+                // The body method from the express-validator package is imported for request body validation
+                // The tokenVerify middleware is imported for token verification before accessing the protected routes
+                // The signup and login routes are defined using router.post(), and the corresponding controller functions from authCtrl (authController.js) are assigned as route handlers
+                // The router object is exported to be used in the main application file
+                // CODE:
+                    const express = require('express')
+                    const router = express.Router();
+                    const { body } = require('express-validator');
+                    const tokenVerify = require("../Middleware/tokenVerify");
+                    const authCtrl = require('../Controllers/authController')
+
+                    router.post("/signup", tokenVerify, authCtrl.userSignup);
+                    router.post("/login", tokenVerify, authCtrl.userLogin);
+
+                    module.exports = router
