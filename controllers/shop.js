@@ -141,31 +141,8 @@ const getCheckOut = (req, res, next) => {
 };
 
 const postOrder = (req, res, next) => {
-    let fetchedCart;
-    req.user.getCart()
-        .then(cart => {
-            fetchedCart = cart;
-            return cart.getProducts();
-        })
-        .then(products => {
-            req.user.createOrder()
-                .then(order => {
-                    return order.addProducts(products.map(product => {
-                        product.orderItem = { quantity: product.cartItem.quantity };
-                        return product;
-                    }));
-                })
-                .catch(err => console.log(err))
-        })
+    req.user.addOrder()
         .then(result => {
-
-            // Drop the cart items
-            return fetchedCart.setProducts(null);
-            // used to drop the cart items
-            // This disassociates all products from the cart
-
-        })
-        .then(finalResult => {
             res.redirect('/orders');
         })
         .catch(err => console.log(err));
@@ -173,8 +150,7 @@ const postOrder = (req, res, next) => {
 
 const getOrders = (req, res, next) => {
 
-    req.user.getOrders({ include: ['products'] }) // Eager Loading
-        // allows you to load and retrieve related data along with the main data in a single query
+    req.user.getOrders()
         .then(orders => {
 
             res.render('shop/orders', {

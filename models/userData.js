@@ -113,6 +113,37 @@ class User {
             .catch(err => console.log(err))
     }
 
+    addOrder() {
+        // we want to add the entire cart into the Order, & also clear the cart from the User
+        const database = db.getDb();
+
+        return this.getCart()
+            .then(products => {
+                const order = {
+                    items: products,
+                    user: {
+                        _id: new mongodb.ObjectId(this._id),
+                        name: this.username
+                    }
+                };
+
+                return database.collection('orders').insertOne(order);
+            })
+            .then(result => {
+                this.cart = { items: [] };
+                return database.collection('users').updateOne(
+                    { _id: this._id },
+                    { $set: { cart: { items: [] } } }
+                );
+            })
+            .catch(err => console.log(err))
+    }
+
+    getOrders() {
+        const database = db.getDb();
+        return database.collection('orders').find({ 'user._id': new mongodb.ObjectId(this._id)  }).toArray() // in MongoDB, we can check NESTED PROPERTIES by defining the path to them, inside "QUOTATION marks"
+    }
+
     static findById(userId) {
         const database = db.getDb();
 
