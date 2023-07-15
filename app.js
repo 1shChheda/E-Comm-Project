@@ -69,6 +69,9 @@ adminRoutes.All_admin_routes(app); // FILTERING: only routes starting with `/adm
     // NOTE: as said before, ORDER MATTERS! But...
     // But, in `shopRoutes, we've used 'router.get' which will only fire first if there was a GET method mentioned in it (which is not)
 
+const authRoutes = require('./routes/auth');
+app.use(authRoutes);
+
 app.use('/', errorController.get404page); // I've SPLIT THE CODE into `MVC`
 
 // Connecting to the database

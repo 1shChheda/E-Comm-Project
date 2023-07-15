@@ -42,8 +42,9 @@ form {
 
 .main-header__nav {
   height: 100%;
-  display: none;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
 }
 
 .main-header__item-list {
@@ -51,11 +52,13 @@ form {
   margin: 0;
   padding: 0;
   display: flex;
+  align-items: center;
 }
 
 .main-header__item {
   margin: 0 1rem;
   padding: 0;
+  display: none;
 }
 
 .main-header__item a {
@@ -231,18 +234,18 @@ form {
 
 @media (min-width: 768px) {
   .main-header__nav {
-    display: flex;
+    width: 100%;
+  }
+
+  .main-header__item {
+    display: block;
   }
 
   #side-menu-toggle {
     display: none;
   }
 
-  .card {
-    width: 100%;
-  } 
-
-  .card:hover {
-    transform: translateY(-5px);
+  .mobile-nav {
+    display: none;
   }
 }

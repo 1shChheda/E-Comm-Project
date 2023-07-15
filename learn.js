@@ -1045,3 +1045,17 @@ const Product = require('./models/productData');
                     router.post("/login", tokenVerify, authCtrl.userLogin);
 
                     module.exports = router
+
+// ----------------------------------------------------------------------
+    // Cookies
+
+        // What is a Cookie?
+            // the user is interacting with the Frontend
+            // he submits a request to our node server
+            // Now let's say that request requires us to store some kind of data in the browser
+            // let's say we have a login page and when the user logs in, we want to store the information that the user is logged in somewhere so that when the user reloads the page and therefore technically a new request is sent, we still have that information around that the user is logged in
+            // for that, we can send back a cookie with the response we send back upon the request
+            // So the user submits the login data and we return a response (ex: redirect to a view page), BUT we also include our cookie,
+            // thus telling us that the user is authenticated
+        
+        // refer auth.js (Controller)
