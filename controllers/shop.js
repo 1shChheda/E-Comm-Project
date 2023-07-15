@@ -8,10 +8,10 @@ const getHomePage = (req, res, next) => {
         .then(products => {
 
             res.render('shop/homepage', {
-                pageTitle : "HomePage",
-                path : "/",
-                prods : products, 
-                hasProducts : products.length > 0
+                pageTitle: "HomePage",
+                path: "/",
+                prods: products,
+                hasProducts: products.length > 0
             });
 
         })
@@ -27,9 +27,9 @@ const getProducts = (req, res, next) => {
     // res.send(`<h1>Hello World! from NodeJS</h1>`); 
 
     // res.sendFile('/views/shop.html'); // GIVES AN ERROR!
-        // But Why?
-            // this method requires an `absolute path` to the file you want to send
-            // `/views/shop.html`, is a relative path and does not represent the absolute path to the file
+    // But Why?
+    // this method requires an `absolute path` to the file you want to send
+    // `/views/shop.html`, is a relative path and does not represent the absolute path to the file
 
     // const filePath = path.join(rootDir, 'views', 'shop.html');
 
@@ -39,12 +39,12 @@ const getProducts = (req, res, next) => {
         .then(products => {
 
             res.render('shop/product-list', {
-                pageTitle : "All Products",
-                path :"/products",
-                prods : products,
-                hasProducts : products.length > 0
+                pageTitle: "All Products",
+                path: "/products",
+                prods: products,
+                hasProducts: products.length > 0
             });
-            
+
         })
         .catch(err => console.log(err));
 };
@@ -55,9 +55,9 @@ const getSeparateProduct = (req, res, next) => {
     Models.Product.findById(productId)
         .then(product => {
             res.render('shop/product-detail', {
-                pageTitle : `${product.title} - Details`,
-                path : `/products`,
-                product : product
+                pageTitle: `${product.title} - Details`,
+                path: `/products`,
+                product: product
             });
 
         })
@@ -70,43 +70,14 @@ const getCart = (req, res, next) => {
     console.log("in the cart");
 
     req.user.getCart()
-        .then(cart => {
-
-            return cart.getProducts()
-                .then(products => {
-                    res.render('shop/cart', {
-                        pageTitle : "My Cart",
-                        path : '/cart',
-                        products : products,
-                        // totalPrice : cart.totalPrice
-                    });
-                })
-                .catch(err => console.log(err));
-
+        .then(products => {
+            res.render('shop/cart', {
+                pageTitle: "My Cart",
+                path: '/cart',
+                products: products
+            });
         })
         .catch(err => console.log(err));
-
-    // Cart.getCart(cart => {
-    //     const allProducts = Models.Product.fetchAll();
-    //     const cartProducts = [];
-    //     for (product of allProducts) {
-
-    //         const cartProductData = cart.products.find(prod => prod.id === Models.Product.id);
-
-    //         if (cart.products.find(prod => prod.id === Models.Product.id)) {
-    //             cartProducts.push({
-    //                 productData : product, 
-    //                 qty : cartProductData.qty
-    //             });
-    //         }
-    //     }
-        // res.render('shop/cart', {
-        //     pageTitle : "My Cart",
-        //     path : '/cart',
-        //     products : cartProducts,
-        //     totalPrice : cart.totalPrice
-        // });
-    // });
 };
 
 const postCart = (req, res, next) => {
@@ -117,41 +88,9 @@ const postCart = (req, res, next) => {
             return req.user.addToCart(product)
         })
         .then(result => {
-            console.log(result);
+            res.redirect('/cart');
         })
         .catch(err => console.log(err))
-    // let fetchedCart;
-    // let newQuantity = 1;
-    // req.user.getCart()
-    //     .then(cart => {
-    //         fetchedCart = cart;
-    //         return cart.getProducts({ where : {id : productId} });
-    //     })
-    //     .then(products => {
-    //         let product;
-
-    //         if(products.length > 0) {
-    //             product = products[0]
-    //         }
-
-    //         if(product) {
-    //             const oldQuantity = Models.Product.cartItem.quantity;
-
-    //             newQuantity = oldQuantity + 1;
-                
-    //             return product;
-    //         }
-
-    //         return Models.Models.Product.findByPk(productId)
-
-    //     })
-    //     .then(product => {
-    //         return fetchedCart.addProduct(product, { through : { quantity : newQuantity } });
-    //     })
-    //     .then(() => {
-    //         res.redirect('/cart');
-    //     })
-    //     .catch(err => console.log(err));
 };
 
 const postCartDeleteProduct = (req, res, next) => {
@@ -159,10 +98,10 @@ const postCartDeleteProduct = (req, res, next) => {
 
     req.user.getCart()
         .then(cart => {
-            return cart.getProducts({ where: { id : productId } });
+            return cart.getProducts({ where: { id: productId } });
         })
         .then(products => {
-            const product = products [0];
+            const product = products[0];
             return product.cartItem.destroy();
         })
         .then(result => {
@@ -171,14 +110,14 @@ const postCartDeleteProduct = (req, res, next) => {
         })
         .catch(err => console.log(err));
 };
-  
+
 const getCheckOut = (req, res, next) => {
 
     console.log("in the checkout");
 
     res.render('shop/checkout', {
-        pageTitle : "CheckOut!",
-        path : '/checkout'
+        pageTitle: "CheckOut!",
+        path: '/checkout'
     });
 };
 
@@ -193,7 +132,7 @@ const postOrder = (req, res, next) => {
             req.user.createOrder()
                 .then(order => {
                     return order.addProducts(products.map(product => {
-                        product.orderItem = {quantity : product.cartItem.quantity};
+                        product.orderItem = { quantity: product.cartItem.quantity };
                         return product;
                     }));
                 })
@@ -202,10 +141,10 @@ const postOrder = (req, res, next) => {
         .then(result => {
 
             // Drop the cart items
-            return fetchedCart.setProducts(null); 
-                    // used to drop the cart items
-                    // This disassociates all products from the cart
-            
+            return fetchedCart.setProducts(null);
+            // used to drop the cart items
+            // This disassociates all products from the cart
+
         })
         .then(finalResult => {
             res.redirect('/orders');
@@ -215,14 +154,14 @@ const postOrder = (req, res, next) => {
 
 const getOrders = (req, res, next) => {
 
-    req.user.getOrders({include : ['products']}) // Eager Loading
-                // allows you to load and retrieve related data along with the main data in a single query
+    req.user.getOrders({ include: ['products'] }) // Eager Loading
+        // allows you to load and retrieve related data along with the main data in a single query
         .then(orders => {
-            
+
             res.render('shop/orders', {
-                pageTitle : "My Orders",
-                path : "/orders",
-                orders : orders
+                pageTitle: "My Orders",
+                path: "/orders",
+                orders: orders
             });
 
         })
@@ -231,13 +170,13 @@ const getOrders = (req, res, next) => {
 };
 
 module.exports = {
-    getHomePage : getHomePage,
-    getProducts : getProducts,
-    getSeparateProduct : getSeparateProduct,
-    getCart : getCart,
-    postCart : postCart,
-    postCartDeleteProduct : postCartDeleteProduct,
-    getOrders : getOrders,
-    postOrder : postOrder,
-    getCheckOut : getCheckOut
+    getHomePage: getHomePage,
+    getProducts: getProducts,
+    getSeparateProduct: getSeparateProduct,
+    getCart: getCart,
+    postCart: postCart,
+    postCartDeleteProduct: postCartDeleteProduct,
+    getOrders: getOrders,
+    postOrder: postOrder,
+    getCheckOut: getCheckOut
 }

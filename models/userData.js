@@ -27,32 +27,50 @@ class User {
         let newQuantity = 1;
         const updatedCartItems = [...this.cart.items];
 
-        if(cartProductIndex >= 0) { // basically if a product doesn't exist in the Cart, "cartProduct" will be = -1
+        if (cartProductIndex >= 0) { // basically if a product doesn't exist in the Cart, "cartProduct" will be = -1
             newQuantity = this.cart.items[cartProductIndex].quantity + 1;
             updatedCartItems[cartProductIndex].quantity = newQuantity
         } else {
             updatedCartItems.push({
-                productId: new mongodb.ObjectId(product._id), 
+                productId: new mongodb.ObjectId(product._id),
                 quantity: newQuantity
             });
         }
 
-        const updatedCart = { 
+        const updatedCart = {
             items: updatedCartItems
         };
 
         const database = db.getDb();
 
         return database.collection('users').updateOne(
-            { _id : this._id }, 
-            { $set: {cart: updatedCart} }
+            { _id: this._id },
+            { $set: { cart: updatedCart } }
         );
+    }
+
+    getCart() {
+        const database = db.getDb();
+        const productIdsArray = this.cart.items.map(individualItem => {
+            return individualItem.productId;
+        });
+        return database.collection('products').find({ _id: { $in: productIdsArray } }).toArray()
+            .then(products => {
+                return products.map(prod => {
+                    return {
+                        ...prod, quantity: this.cart.items.find(individualItem => {
+                            return individualItem.productId.toString() === prod._id.toString()
+                        }).quantity
+                    };
+                });
+            })
+            .catch(err => console.log(err))
     }
 
     static findById(userId) {
         const database = db.getDb();
 
-        return database.collection('users').find({ _id : new mongodb.ObjectId(userId) }).toArray()
+        return database.collection('users').find({ _id: new mongodb.ObjectId(userId) }).toArray()
             .then(users => {
                 console.log(users);
                 return users[0]
