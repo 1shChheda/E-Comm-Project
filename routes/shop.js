@@ -31,6 +31,10 @@ router.post("/cart", shopController.postCart);
 
 router.get('/cart', shopController.getCart);
 
+router.post('/cart/increment', shopController.incrementCartItem);
+
+router.post('/cart/decrement', shopController.decrementCartItem);
+
 router.post('/cart-delete-item', shopController.postCartDeleteProduct);
 
 router.get('/orders', shopController.getOrders);

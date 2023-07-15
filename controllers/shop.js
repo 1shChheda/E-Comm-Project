@@ -93,17 +93,36 @@ const postCart = (req, res, next) => {
         .catch(err => console.log(err))
 };
 
+const incrementCartItem = async (req, res, next) => {
+    const productId = req.body.productId;
+    
+    Models.Product.findById(productId)
+        .then(product => {
+            return req.user.addToCart(product)
+        })
+        .then(result => {
+            res.redirect('/cart');
+        })
+        .catch(err => console.log(err))
+}
+
+const decrementCartItem = async (req, res, next) => {
+    const productId = req.body.productId;
+
+    Models.Product.findById(productId)
+        .then(product => {
+            return req.user.removeFromCart(product)
+        })
+        .then(result => {
+            res.redirect('/cart');
+        })
+        .catch(err => console.log(err))
+}
+
 const postCartDeleteProduct = (req, res, next) => {
     const productId = req.body.productId;
 
-    req.user.getCart()
-        .then(cart => {
-            return cart.getProducts({ where: { id: productId } });
-        })
-        .then(products => {
-            const product = products[0];
-            return product.cartItem.destroy();
-        })
+    req.user.deleteItemFromCart(productId)
         .then(result => {
             console.log("Product Removed from the Cart!");
             res.redirect('/cart');
@@ -175,6 +194,8 @@ module.exports = {
     getSeparateProduct: getSeparateProduct,
     getCart: getCart,
     postCart: postCart,
+    incrementCartItem: incrementCartItem,
+    decrementCartItem: decrementCartItem,
     postCartDeleteProduct: postCartDeleteProduct,
     getOrders: getOrders,
     postOrder: postOrder,

@@ -1,32 +1,46 @@
 <%- include('../layouts/head.ejs') %>
-    <link rel="stylesheet" href="/css/cart.css">
-    </head>
+<link rel="stylesheet" href="/css/cart.css">
+</head>
 
-    <body>
-        <%- include('../layouts/navbar.ejs') %>
-        <main>
-            <% if (products.length > 0) { %>
-                <ul class="cart__item-list">
-                    <% products.forEach(p => { %>
-                        <li class="cart__item">
-                            <h1><%= p.title %></h1>
-                            <h2>Quantity: <%= p.quantity %></h2>
-                            <form action="/cart-delete-item" method="POST">
+<body>
+    <%- include('../layouts/navbar.ejs') %>
+    <main>
+        <% if (products.length > 0) { %>
+        <ul class="cart__item-list">
+            <% products.forEach(p => { %>
+            <li class="cart__item">
+                <div class="cart__details">
+                    <h1><%= p.title %></h1>
+                    <div class="cart__quantity-delete">
+                        <div class="cart__quantity">
+                            <form action="/cart/decrement" method="POST" class="cart__decrement-form">
                                 <input type="hidden" value="<%= p._id %>" name="productId">
-                                <button class="btn danger" type="submit">Delete</button>
+                                <button class="btn cart__btn cart__btn--decrement" type="submit">-</button>
                             </form>
-                        </li>
-                    <% }) %>
-                </ul>
-                <hr>
-                <div class="centered">
-                    <form action="/create-order" method="POST">
-                        <button type="submit" class="btn">Order Now!</button>
-                    </form>
+                            <h2>Qty: <%= p.quantity %></h2>
+                            <form action="/cart/increment" method="POST" class="cart__increment-form">
+                                <input type="hidden" value="<%= p._id %>" name="productId">
+                                <button class="btn cart__btn cart__btn--increment" type="submit">+</button>
+                            </form>
+                        </div>
+                        <form action="/cart-delete-item" method="POST">
+                            <input type="hidden" value="<%= p._id %>" name="productId">
+                            <button class="btn danger" type="submit">Delete</button>
+                        </form>
+                    </div>
                 </div>
-                
-            <% } else { %>
-                <h1>No Products in Cart!</h1>
-            <% } %>
-        </main>
-        <%- include('../layouts/end.ejs') %>
+            </li>
+            <% }) %>
+        </ul>
+        <hr>
+        <div class="centered">
+            <form action="/create-order" method="POST">
+                <button type="submit" class="btn">Order Now!</button>
+            </form>
+        </div>
+
+        <% } else { %>
+        <h1>No Products in Cart!</h1>
+        <% } %>
+    </main>
+    <%- include('../layouts/end.ejs') %>

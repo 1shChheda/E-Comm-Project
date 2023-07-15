@@ -49,6 +49,52 @@ class User {
         );
     }
 
+    removeFromCart(product) {
+        const cartProductIndex = this.cart.items.findIndex(cartItem => {
+            return cartItem.productId.toString() === product._id.toString();
+        });
+
+        const updatedCartItems = [...this.cart.items];
+        let newQuantity;
+
+        if (cartProductIndex >=0) {
+            newQuantity = this.cart.items[cartProductIndex].quantity - 1;
+            if (newQuantity <= 0) {
+                return this.deleteItemFromCart(product._id);
+            } else {
+                updatedCartItems[cartProductIndex].quantity = newQuantity;
+            }
+        }
+
+        const updatedCart = {
+            items: updatedCartItems
+        };
+
+        const database = db.getDb();
+
+        return database.collection('users').updateOne(
+            { _id: this._id },
+            { $set: { cart: updatedCart } }
+        );
+    }
+
+    deleteItemFromCart(productId) {
+        const updatedCartItems = this.cart.items.filter(item => {
+            return item.productId.toString() !== productId.toString();
+        });
+
+        const updatedCart = {
+            items: updatedCartItems
+        };
+
+        const database = db.getDb();
+
+        return database.collection('users').updateOne(
+            { _id: this._id },
+            { $set: { cart: updatedCart } }
+        );
+    }
+
     getCart() {
         const database = db.getDb();
         const productIdsArray = this.cart.items.map(individualItem => {
