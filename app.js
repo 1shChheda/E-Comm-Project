@@ -28,6 +28,8 @@ const path = require('path');
 
 const bodyParser = require('body-parser');
 
+const session = require('express-session');
+
 const errorController = require('./controllers/404error');
 
 const db = require('./utils/database');
@@ -49,6 +51,18 @@ app.use(express.static(path.join(__dirname, 'public'))); // for serving static f
 app.set('view engine', 'ejs'); // telling expressJS we want to compile dynamic templates with the ejs engine
 
 app.set('views', 'views'); // telling expressJS where to find these templates
+
+app.use(session({
+    secret : 'its a secret', 
+        // used to sign the session ID cookie // in production, it should be a long randomly generated string value
+    resave: false, 
+        // means that the session will not be saved on every request that is done, so on every response that is sent, BUT ONLY if something changed in the session
+    saveUninitialized: false
+        // to ensure that no session gets saved for a request where it doesn't need to be saved because nothing was changed about it
+
+    // basically these two ensure ki baar-baar auto-save nahi karega session ko, unecessary
+    // cookie: {}, // we can also configure the cookie settings for this cookie (which'll store session ID)
+}));
 
 app.use((req, res, next) => {
     Models.User.findById('649d7b3fe81b4f425b935f13')

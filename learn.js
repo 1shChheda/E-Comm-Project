@@ -1058,4 +1058,33 @@ const Product = require('./models/productData');
             // So the user submits the login data and we return a response (ex: redirect to a view page), BUT we also include our cookie,
             // thus telling us that the user is authenticated
         
+        // So, COOKIES are stored on the CLIENT-SIDE
+        
         // refer auth.js (Controller)
+
+// ----------------------------------------------------------------------
+    // Sessions
+
+        // Why use it?
+            // suppose we have to store some user information (for authentication, or activity tracking, etc)
+                // NOTE: 
+                    // we can't store it in a request (since it won't work, as we saw) -> requests die after we send a response
+                    // NOR will we store it in some variable in our express app -> because that would be shared across all users and all requests
+                // VERY IMP: 
+                    // we only want to share the information across all requests of the same user
+                    // so that other users can't see your data, can't assume your role
+            // instead of storing essential user information in frontend (in cookies) (which we learnt is a BAD PLACE for such a thing) -> since it can be manipulated easily
+            // we'll store it in the backend with a so-called session
+
+        // So, SESSIONS are stored on the SERVER-SIDE
+
+        // Start by storing this info in "Memory" Session Storage
+        // After that, move to learn to store it on "Database" Session Storage
+
+        // Now,
+            // A client needs to tell the server to which session he belongs
+            // we'll use a cookie where we will store the ID of the session
+            // we'll not store the actual ID, but a Hashed Id of the session, so that only server can confirm its authenticity 
+                // so that even if its manipulated, security is intact
+        
+        // package used : "express-session"
