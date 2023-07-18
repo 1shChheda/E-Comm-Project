@@ -11,7 +11,8 @@ const getHomePage = (req, res, next) => {
                 pageTitle: "HomePage",
                 path: "/",
                 prods: products,
-                hasProducts: products.length > 0
+                hasProducts: products.length > 0,
+                isAuthenticated: req.session.isLoggedIn
             });
 
         })
@@ -42,7 +43,8 @@ const getProducts = (req, res, next) => {
                 pageTitle: "All Products",
                 path: "/products",
                 prods: products,
-                hasProducts: products.length > 0
+                hasProducts: products.length > 0,
+                isAuthenticated: req.session.isLoggedIn
             });
 
         })
@@ -57,7 +59,8 @@ const getSeparateProduct = (req, res, next) => {
             res.render('shop/product-detail', {
                 pageTitle: `${product.title} - Details`,
                 path: `/products`,
-                product: product
+                product: product,
+                isAuthenticated: req.session.isLoggedIn
             });
 
         })
@@ -69,12 +72,13 @@ const getCart = (req, res, next) => {
 
     console.log("in the cart");
 
-    req.user.getCart()
+    req.session.user.getCart()
         .then(products => {
             res.render('shop/cart', {
                 pageTitle: "My Cart",
                 path: '/cart',
-                products: products
+                products: products,
+                isAuthenticated: req.session.isLoggedIn
             });
         })
         .catch(err => console.log(err));
@@ -85,7 +89,7 @@ const postCart = (req, res, next) => {
 
     Models.Product.findById(productId)
         .then(product => {
-            return req.user.addToCart(product)
+            return req.session.user.addToCart(product)
         })
         .then(result => {
             res.redirect('/cart');
@@ -98,7 +102,7 @@ const incrementCartItem = async (req, res, next) => {
     
     Models.Product.findById(productId)
         .then(product => {
-            return req.user.addToCart(product)
+            return req.session.user.addToCart(product)
         })
         .then(result => {
             res.redirect('/cart');
@@ -111,7 +115,7 @@ const decrementCartItem = async (req, res, next) => {
 
     Models.Product.findById(productId)
         .then(product => {
-            return req.user.removeFromCart(product)
+            return req.session.user.removeFromCart(product)
         })
         .then(result => {
             res.redirect('/cart');
@@ -122,7 +126,7 @@ const decrementCartItem = async (req, res, next) => {
 const postCartDeleteProduct = (req, res, next) => {
     const productId = req.body.productId;
 
-    req.user.deleteItemFromCart(productId)
+    req.session.user.deleteItemFromCart(productId)
         .then(result => {
             console.log("Product Removed from the Cart!");
             res.redirect('/cart');
@@ -136,12 +140,13 @@ const getCheckOut = (req, res, next) => {
 
     res.render('shop/checkout', {
         pageTitle: "CheckOut!",
-        path: '/checkout'
+        path: '/checkout',
+        isAuthenticated: req.isLoggedIn
     });
 };
 
 const postOrder = (req, res, next) => {
-    req.user.addOrder()
+    req.session.user.addOrder()
         .then(result => {
             res.redirect('/orders');
         })
@@ -150,13 +155,14 @@ const postOrder = (req, res, next) => {
 
 const getOrders = (req, res, next) => {
 
-    req.user.getOrders()
+    req.session.user.getOrders()
         .then(orders => {
 
             res.render('shop/orders', {
                 pageTitle: "My Orders",
                 path: "/orders",
-                orders: orders
+                orders: orders,
+                isAuthenticated: req.session.isLoggedIn
             });
 
         })

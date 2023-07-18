@@ -1,3 +1,4 @@
+const mongodb = require('mongodb'); // NOTE: I've used new mongodb.ObjectId() at places in this file since the "req.session.user._id" property didn't have the same BSON type as it was required while storing, thus needed to convert it to that type first
 const Models = require('../utils/all_Models');
 const getAddProduct = (req, res, next) => {
     console.log("in the admin/add-products page");
@@ -9,7 +10,8 @@ const getAddProduct = (req, res, next) => {
     res.render('admin/edit-product', {
         pageTitle : "Add Product",
         path : '/admin/add-product',
-        editing : false
+        editing : false,
+        isAuthenticated: req.session.isLoggedIn
     });
     // next(); // No Need. Will Result in an Error
 };
@@ -26,7 +28,7 @@ const postAddProduct = (req, res, next) => {
     const description = req.body.description;
     const price = req.body.price;
     
-    const product = new Models.Product(null, title, price, description, imageUrl, req.user._id);
+    const product = new Models.Product(null, title, price, description, imageUrl, new mongodb.ObjectId((req.session.user._id).toString()));
 
     product.save()
         .then(result => {
@@ -61,7 +63,8 @@ const getEditProduct = (req, res, next) => {
             if(!product) {
                 res.status(404).render('404-error', {
                     pageTitle: "Page Not Found",
-                    path: req.path 
+                    path: req.path,
+                    isAuthenticated: req.session.isLoggedIn
                 });
             }
     
@@ -69,7 +72,8 @@ const getEditProduct = (req, res, next) => {
                 pageTitle : "Edit Product",
                 path : '/admin/edit-product',
                 editing : editMode,
-                product : product
+                product : product,
+                isAuthenticated: req.session.isLoggedIn
             });
 
         })
@@ -84,7 +88,7 @@ const postEditProduct = (req, res, next) => {
     const updatedDescription = req.body.description;
     const updatedImageUrl = req.body.imageUrl;
 
-    const product = new Models.Product(productId, updatedTitle, updatedPrice, updatedDescription, updatedImageUrl, req.user._id)
+    const product = new Models.Product(productId, updatedTitle, updatedPrice, updatedDescription, updatedImageUrl, new mongodb.ObjectId((req.session.user._id).toString()))
     // To save these changes in our database, we simply use:
     return product.save()
         .then(result => {
@@ -122,7 +126,8 @@ const getProducts = (req, res, next) => {
                 pageTitle : "Admin Products",
                 path : "/admin/products",
                 prods : products, 
-                hasProducts : products.length > 0
+                hasProducts : products.length > 0,
+                isAuthenticated: req.session.isLoggedIn
             });
 
         })

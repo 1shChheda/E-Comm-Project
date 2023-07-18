@@ -123,7 +123,7 @@ class User {
                     items: products,
                     user: {
                         _id: new mongodb.ObjectId(this._id),
-                        name: this.username
+                        name: req.session.user.username
                     }
                 };
 
@@ -132,7 +132,7 @@ class User {
             .then(result => {
                 this.cart = { items: [] };
                 return database.collection('users').updateOne(
-                    { _id: this._id },
+                    { _id: req.session.user._id },
                     { $set: { cart: { items: [] } } }
                 );
             })
@@ -141,7 +141,7 @@ class User {
 
     getOrders() {
         const database = db.getDb();
-        return database.collection('orders').find({ 'user._id': new mongodb.ObjectId(this._id)  }).toArray() // in MongoDB, we can check NESTED PROPERTIES by defining the path to them, inside "QUOTATION marks"
+        return database.collection('orders').find({ 'user._id': new mongodb.ObjectId(req.session.user._id)  }).toArray() // in MongoDB, we can check NESTED PROPERTIES by defining the path to them, inside "QUOTATION marks"
     }
 
     static findById(userId) {
@@ -149,7 +149,6 @@ class User {
 
         return database.collection('users').find({ _id: new mongodb.ObjectId(userId) }).toArray()
             .then(users => {
-                console.log(users);
                 return users[0]
             })
             .catch(err => console.log(err))

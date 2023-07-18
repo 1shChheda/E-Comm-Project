@@ -1,46 +1,37 @@
+const Models = require('../utils/all_Models');
+
 const getLogin = (req, res, next) => {
-    const isLoggedIn = req.get('Cookie')?.split('=')[1] === 'true'; // Cookie Extraction // Using optional chaining to handle undefined
-        // Note : Cookies can be manipulated from browser-side
+
+    console.log(req.session.isLoggedIn);
+        // session will be stored in the server-side, &
+        // the cookie related to this session will by default, be stored in the memory
+        // also NOTE: it wont't be the same for different browsers,
+            // meaning, if you now open a different browser, it'll show "undefined" i.e. it'll not have a active session on the server (or not the same cookie set as the one on your previous browser)
+
+        // In SHORT, this session thing can be very useful, since 
+            // it separates users from accessing each others data, 
+            // even if same user tries stuff on different browser, it'll treat it as a new user 
+            // (as in, new session stuff...not related to previous browser's session at all)
+            // SUPER USEFUL while "Authentication Stuff", or while building REST APIs
+
     res.render('auth/login', {
         pageTitle: "Login",
         path: "/login",
-        isAuthenticated: isLoggedIn || false, // Default value when 'Cookie' header is not present
+        isAuthenticated: req.session.isLoggedIn || false, // Default value when 'Cookie' header is not present
     });
 };
 
 const postLogin = (req, res, next) => {
 
-    // req.isLoggedIn = true; 
-        // Even if we do this, in hopes to use "request" to save the "login status" to "true", IT FAILS (i.e. you wont be able to see "Admin Products" or "Add Products")...but WHY??
-
-        // IMPORTANT:
-            // the request is dead, it's done. With a response, we basically finished a request
-            // we got a request and we sent a response, & we're done
-            // This data does not stick around
-            // This data is lost after the request or after we send the response
-
-        // But you might wonder, why did the "req.user" work so fine then (in app.js),....it should have died too, right?
-            // well, that middleware (app.use...) runs on every incoming request before our routes handle it
-            // So the data we store here is used in the same request cycle, in our route handlers / controllers
-
-    // res.setHeader('Set-Cookie', 'loggedIn=true'); 
-        // 1st Argument: 'Set-Cookie' is a reserved name, to set Cookie
-        // 2nd Argument: value of the Header (simplest form => key-value pair)
-
-        // Cookie Configurations:
-            // To set a Expiry Date for the Cookie, else it'll die once you close your Browser
-            const expiryDate = new Date();
-            expiryDate.setDate(expiryDate.getDate() + 7); // Add 7 days to the current date
-
-            // Secure -> this cookie will only be set if the page is served via https
-
-            // Domain: URL -> domain to which the cookies should be sent (for that tracking thing)
-
-            // HttpOnly -> prevents client-side JavaScript from accessing the cookie
-            //          -> This adds an extra layer of security against cross-site scripting (XSS) attacks
-            res.setHeader('Set-Cookie', `loggedIn=true; Secure; Expires=${expiryDate.toUTCString()}; HttpOnly`);
-
-    res.redirect('/')
+    Models.User.findById('649d7b3fe81b4f425b935f13')
+        .then(user => {
+            req.session.isLoggedIn = true;
+                // 'session' object is added by the 'session middleware' we wrote earlier
+                // access the 'session' object to store & retrieve user-specific data
+            req.session.user = user;
+            res.redirect('/')
+        })
+        .catch(err => console.log(err));
 
 };
 

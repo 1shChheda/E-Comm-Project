@@ -30,6 +30,11 @@ const bodyParser = require('body-parser');
 
 const session = require('express-session');
 
+const MongoDBStore = require('connect-mongodb-session')(session);
+    // The require('connect-mongodb-session') statement returns a function
+    // By adding (session) after it, we are immediately invoking that function and passing session as a parameter to it
+    // the final yield is a "Constructor Function"
+
 const errorController = require('./controllers/404error');
 
 const db = require('./utils/database');
@@ -39,6 +44,13 @@ const Models = require('./utils/all_Models');
 require('dotenv').config(); // necessary to load the environment variables from the ".env" file into the "process.env" object
 
 const PORT = process.env.PORT || 3000; // if "PORT" env variable will have any value set, it'll use that value ... else it'll use 5000
+
+// Configuring Session Store
+    // Creating an instance of MongoDBStore to configure the session store
+const store = new MongoDBStore({
+    uri: process.env.DB_URI,
+    collection: 'sessions'
+});
 
 app.use(bodyParser.urlencoded()); // It returns a middleware like any other, plus it does the WHOLE BODY PARSING thing we did manually earlier (in routes.js) 
 
@@ -57,11 +69,13 @@ app.use(session({
         // used to sign the session ID cookie // in production, it should be a long randomly generated string value
     resave: false, 
         // means that the session will not be saved on every request that is done, so on every response that is sent, BUT ONLY if something changed in the session
-    saveUninitialized: false
+    saveUninitialized: false,
         // to ensure that no session gets saved for a request where it doesn't need to be saved because nothing was changed about it
 
     // basically these two ensure ki baar-baar auto-save nahi karega session ko, unecessary
     // cookie: {}, // we can also configure the cookie settings for this cookie (which'll store session ID)
+
+    store: store // tells the session middleware to store the session data in MongoDB
 }));
 
 app.use((req, res, next) => {
