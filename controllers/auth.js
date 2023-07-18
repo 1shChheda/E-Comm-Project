@@ -1,4 +1,43 @@
+const bcrypt = require('bcryptjs');
 const Models = require('../utils/all_Models');
+
+const getSignup = (req, res, next) => {
+    res.render('auth/signup', {
+        path: '/signup',
+        pageTitle: 'Signup',
+        isAuthenticated: false
+    });
+};
+
+const postSignup = (req, res, next) => {
+    const { username, email, password, confirmPassword } = req.body;
+
+    Models.User.findOne({ email: email })
+        .then(existingUser => {
+            if (existingUser) {
+                return res.redirect('/signup'); // we'll pass that error message thing afterwards
+            }
+
+            // const user = new Models.User(null, username, email, password, { items: [] });
+                // we cannot store password in plain text (as it is) --> {can be dangerous if the DB gets compromised, everything is exposed!}
+                // so we need to HASH it (irreversibly, so no-on can construct it back from the hash)
+
+                // package used: "bcryptjs"
+            
+            return bcrypt.hash(password, 12)
+                // 1st value: "String that you want to hash"
+                // 2nd value: "Salt value" --> rounds of hashing needs to be applied (higher the value, the longer it'll take but the more secure it'll be)
+                .then(hashedPassword => {
+                    const user = new Models.User(null, username, email, hashedPassword, { items: [] });
+                    return user.save();
+                })
+                .then(result => {
+                    console.log('User created successfully!');
+                    res.redirect('/login');
+                });
+        })
+        .catch(err => console.log(err));
+};
 
 const getLogin = (req, res, next) => {
 
@@ -55,6 +94,8 @@ const postLogout = (req, res, next) => {
 };
 
 module.exports = {
+    getSignup: getSignup,
+    postSignup: postSignup,
     getLogin: getLogin,
     postLogin: postLogin,
     postLogout: postLogout

@@ -2,10 +2,11 @@ const mongodb = require('mongodb');
 const db = require('../utils/database');
 
 class User {
-    constructor(id, username, email, cart) {
+    constructor(id, username, email, password, cart) {
         this._id = id ? new mongodb.ObjectId(id) : null;
         this.username = username;
         this.email = email;
+        this.password = password;
         this.cart = cart; // { items: [], totalPrice: $ }
     }
 
@@ -143,6 +144,16 @@ class User {
         const database = db.getDb();
         return database.collection('orders').find({ 'user._id': new mongodb.ObjectId(this._id)  }).toArray() // in MongoDB, we can check NESTED PROPERTIES by defining the path to them, inside "QUOTATION marks"
     }
+
+    static findOne(filter) {
+        const database = db.getDb();
+    
+        return database.collection('users').findOne(filter)
+            .then(user => {
+                return user;
+            })
+            .catch(err => console.log(err));
+    }    
 
     static findById(userId) {
         const database = db.getDb();

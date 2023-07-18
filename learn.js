@@ -1155,3 +1155,20 @@ const Product = require('./models/productData');
     // Additionally, There are two major types of Cookies:
         // 1) Session Cookies
         // 2) Permanent Cookies --> one's which we set an expiry date for (i.e. they do not go away necessarily when you close the browser)
+
+// ----------------------------------------------------------------------
+    // Authentication!
+
+        // Why need it?
+            // We need to be able to differentiate between anonymous users who are not logged-in and logged-in users
+            // & We need to provide a flow, a view and the backend logic that allows people visiting our page to sign up and then to sign in
+            // & then we can use sessions to store the information whether a user is signed in and well let him interact with the page across requests
+
+        // How is it Implemented?
+            // NOTE: assuming User has already Signed-Up
+            // A user sends a "Login Request" with "email" & "password"
+            // We check & verify his credentials
+            // If verified, we create a "Session" for this user (to identify him for future requests)
+            // We send a 200 Response & also store the Session info in a "Cookie"
+            // Then when the User tries to access Restricted routes, we can use the "session" to check is the user is logged-in or not
+
