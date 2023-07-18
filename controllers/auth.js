@@ -29,7 +29,10 @@ const postLogin = (req, res, next) => {
                 // 'session' object is added by the 'session middleware' we wrote earlier
                 // access the 'session' object to store & retrieve user-specific data
             req.session.user = user;
-            res.redirect('/')
+            req.session.save((err) => { // when we need to be sure that a session was created before we're redirected
+                console.log(err);
+                res.redirect('/')
+            });
         })
         .catch(err => console.log(err));
 

@@ -1150,6 +1150,8 @@ const Product = require('./models/productData');
 
             // install the package
 
-            // go to ap.js, where you configured your session middleware,
-            // there you'll now configure your store
+    // IMP: a "Session Cookie" is not necessarily used to identify a session, they're just called so because they only survive as long as you're using that page in the current browser
 
+    // Additionally, There are two major types of Cookies:
+        // 1) Session Cookies
+        // 2) Permanent Cookies --> one's which we set an expiry date for (i.e. they do not go away necessarily when you close the browser)

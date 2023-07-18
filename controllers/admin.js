@@ -28,7 +28,7 @@ const postAddProduct = (req, res, next) => {
     const description = req.body.description;
     const price = req.body.price;
     
-    const product = new Models.Product(null, title, price, description, imageUrl, new mongodb.ObjectId((req.session.user._id).toString()));
+    const product = new Models.Product(null, title, price, description, imageUrl, req.user._id);
 
     product.save()
         .then(result => {
@@ -88,7 +88,7 @@ const postEditProduct = (req, res, next) => {
     const updatedDescription = req.body.description;
     const updatedImageUrl = req.body.imageUrl;
 
-    const product = new Models.Product(productId, updatedTitle, updatedPrice, updatedDescription, updatedImageUrl, new mongodb.ObjectId((req.session.user._id).toString()))
+    const product = new Models.Product(productId, updatedTitle, updatedPrice, updatedDescription, updatedImageUrl, req.user._id)
     // To save these changes in our database, we simply use:
     return product.save()
         .then(result => {

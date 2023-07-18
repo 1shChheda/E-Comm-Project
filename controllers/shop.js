@@ -72,7 +72,7 @@ const getCart = (req, res, next) => {
 
     console.log("in the cart");
 
-    req.session.user.getCart()
+    req.user.getCart()
         .then(products => {
             res.render('shop/cart', {
                 pageTitle: "My Cart",
@@ -89,7 +89,7 @@ const postCart = (req, res, next) => {
 
     Models.Product.findById(productId)
         .then(product => {
-            return req.session.user.addToCart(product)
+            return req.user.addToCart(product)
         })
         .then(result => {
             res.redirect('/cart');
@@ -102,7 +102,7 @@ const incrementCartItem = async (req, res, next) => {
     
     Models.Product.findById(productId)
         .then(product => {
-            return req.session.user.addToCart(product)
+            return req.user.addToCart(product)
         })
         .then(result => {
             res.redirect('/cart');
@@ -115,7 +115,7 @@ const decrementCartItem = async (req, res, next) => {
 
     Models.Product.findById(productId)
         .then(product => {
-            return req.session.user.removeFromCart(product)
+            return req.user.removeFromCart(product)
         })
         .then(result => {
             res.redirect('/cart');
@@ -126,7 +126,7 @@ const decrementCartItem = async (req, res, next) => {
 const postCartDeleteProduct = (req, res, next) => {
     const productId = req.body.productId;
 
-    req.session.user.deleteItemFromCart(productId)
+    req.user.deleteItemFromCart(productId)
         .then(result => {
             console.log("Product Removed from the Cart!");
             res.redirect('/cart');
@@ -146,7 +146,7 @@ const getCheckOut = (req, res, next) => {
 };
 
 const postOrder = (req, res, next) => {
-    req.session.user.addOrder()
+    req.user.addOrder()
         .then(result => {
             res.redirect('/orders');
         })
@@ -155,7 +155,9 @@ const postOrder = (req, res, next) => {
 
 const getOrders = (req, res, next) => {
 
-    req.session.user.getOrders()
+    console.log("in the order-page");
+    
+    req.user.getOrders()
         .then(orders => {
 
             res.render('shop/orders', {

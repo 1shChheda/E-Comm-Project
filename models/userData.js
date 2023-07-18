@@ -132,7 +132,7 @@ class User {
             .then(result => {
                 this.cart = { items: [] };
                 return database.collection('users').updateOne(
-                    { _id: req.session.user._id },
+                    { _id: this._id },
                     { $set: { cart: { items: [] } } }
                 );
             })
@@ -141,7 +141,7 @@ class User {
 
     getOrders() {
         const database = db.getDb();
-        return database.collection('orders').find({ 'user._id': new mongodb.ObjectId(req.session.user._id)  }).toArray() // in MongoDB, we can check NESTED PROPERTIES by defining the path to them, inside "QUOTATION marks"
+        return database.collection('orders').find({ 'user._id': new mongodb.ObjectId(this._id)  }).toArray() // in MongoDB, we can check NESTED PROPERTIES by defining the path to them, inside "QUOTATION marks"
     }
 
     static findById(userId) {

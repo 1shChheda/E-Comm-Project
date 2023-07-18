@@ -78,8 +78,17 @@ app.use(session({
     store: store // tells the session middleware to store the session data in MongoDB
 }));
 
+// By the time we reach here, our Session Data will be loaded
+// So we just want to use that session data to load our real user, 
+// & create a MongoDB User Model, BASED ON THE DATA STORED IN THE SESSION (i.e the data that persists across requests)
+// & store it in the req.user (so it will also remain accross requests, but fueled by the data stored in the session)
+// we need to make this model, since we need to work with model (for Cart & Order)
+// when we try to use "req.session.user" in Cart & Order, it fails, since IT IS PLAIN DATA of User, NOT A MODEL we can work with
 app.use((req, res, next) => {
-    Models.User.findById('649d7b3fe81b4f425b935f13')
+    if (!req.session.user) {
+        return next();
+    }
+    Models.User.findById(req.session.user._id)
         .then(user => {
             req.user = new Models.User(user._id, user.username, user.email, user.cart);
             next();
