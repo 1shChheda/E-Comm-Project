@@ -35,7 +35,24 @@ const postLogin = (req, res, next) => {
 
 };
 
+const postLogout = (req, res, next) => {
+    req.session.destroy((err) => {
+        console.log(err);
+        res.redirect('/');
+    }); // to destroy/delete the session after LogOut
+
+    // Now what will happen?
+        // When you LogIn fresh, a new session will be created, & its corresponding cookie will also be created in the browser.
+        // Now, when you "LogOut",
+            // the session will be deleted from the database.
+            // BUT, you might see that session's cookie still in the browser.
+                // Don't worry, Its of NO USE now, since its parent session is deleted, this cookie wont have any effect on anything
+                // It'll get overwritten if you start a new session (LogIn again), else
+                // It'll be deleted once you close your browser tab
+};
+
 module.exports = {
     getLogin: getLogin,
-    postLogin: postLogin
+    postLogin: postLogin,
+    postLogout: postLogout
 }

@@ -61,9 +61,14 @@ form {
   display: none;
 }
 
-.main-header__item a {
+.main-header__item a,
+.main-header__item button {
+  font: inherit;
+  background: transparent;
+  border: none;
   text-decoration: none;
   color: white;
+  cursor: pointer;
   font-size: 1.2rem;
 }
 
