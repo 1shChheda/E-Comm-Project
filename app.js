@@ -37,6 +37,8 @@ const MongoDBStore = require('connect-mongodb-session')(session);
 
 const csrf = require('csurf');
 
+const flash = require('connect-flash');
+
 const errorController = require('./controllers/404error');
 
 const db = require('./utils/database');
@@ -56,7 +58,7 @@ const store = new MongoDBStore({
 
 const csrfProtection = csrf(); // we get a Middleware from this, which we use after we have initialized the session (line 71 - 83) {since this will use the session too}
 
-app.use(bodyParser.urlencoded()); // It returns a middleware like any other, plus it does the WHOLE BODY PARSING thing we did manually earlier (in routes.js) 
+app.use(bodyParser.urlencoded({ extended: true })); // It returns a middleware like any other, plus it does the WHOLE BODY PARSING thing we did manually earlier (in routes.js) 
 
 // app.use(bodyParser.urlencoded({extended: false})); // to avoid the safety alert text
 
@@ -84,6 +86,8 @@ app.use(session({
 
 app.use(csrfProtection);
 
+app.use(flash());
+
 // By the time we reach here, our Session Data will be loaded
 // So we just want to use that session data to load our real user, 
 // & create a MongoDB User Model, BASED ON THE DATA STORED IN THE SESSION (i.e the data that persists across requests)
@@ -100,6 +104,17 @@ app.use((req, res, next) => {
             next();
         })
         .catch(err => console.log(err))
+});
+
+
+// "res.locals" is an object in Express that allows you 
+    // --> to set local variables that are accessible within your templates when rendering views
+    // --> so, "isAuthenticated" and "csrfToken" variables can be accessed from any view template that is rendered after this middleware is executed
+    // --> Thus, we don't ned to include these variables in the object for each individual page render
+app.use((req, res, next) => {
+    res.locals.isAuthenticated = req.session.isLoggedIn;
+    res.locals.csrfToken = req.csrfToken();
+    next();
 });
 
 const shopRoutes = require('./routes/shop');

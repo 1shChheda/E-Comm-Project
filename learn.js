@@ -1174,6 +1174,7 @@ const Product = require('./models/productData');
 
 // ----------------------------------------------------------------------
     // CSRF ATTACKS
+
         // Cross Site Request Forgery
             // a special kind of attack pattern WHERE people can abuse your sessions and trick users of your application to execute malicious code
             
@@ -1211,7 +1212,26 @@ const Product = require('./models/productData');
 
             // for that, we need to make it available in our view first, RIGHT?
                 // To start with, add it in Homepage Controller (so we can access it in LogOut button in Navbar)
-
                 // NOTE: the "name" of the hidden input field will be "_csrf"
 
                 // also, we'll need to use it alongisde all our Routes further
+            // NOW!, (since you now know how to use it in individual page renders) We'll make it less complex, & make the "csrfToken" & "isAuthenticated" available to all our views
+                // for that we use "res.locals" in the middleware in app.js { After the INITIALIZATION of session & csrfProtection }
+                // MORE EXPLANATION given on app.js (line 110 - 118)
+
+ // ----------------------------------------------------------------------
+    // Temporary Messages (Flash Messages)
+        
+        // package used: "connect-flash"
+        // What is this?
+            // It's a Middleware, used To Handle Flash Messages, which are Temporary Messages shown to users after certain events (eg: successful login, etc)
+            // It intercepts the req and res objects during the HTTP req-res cycle, adding a "req.flash()" function to the req object
+            // It is useful for providing feedback to users based on their actions
+
+        // How does it work?
+            // The "req.flash(type, message)" function is used to set flash messages of a specific type (e.g., "success," "error," "info," etc.) along with the associated message
+            // These messages are stored in the session
+            // After setting flash messages, you can redirect to another page or render a new page, and the messages will be available in the new request
+            // To access the flash messages in the subsequent request, use "req.flash(type)" to retrieve messages of a specific type from the session
+            // The messages are automatically removed from the session after retrieval, ensuring they won't be shown again on future requests
+        // NOTE: Initialize it in app.js AFTER you initialize session & csrfProtection

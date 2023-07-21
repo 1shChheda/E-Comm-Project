@@ -4,8 +4,7 @@ const Models = require('../utils/all_Models');
 const getSignup = (req, res, next) => {
     res.render('auth/signup', {
         path: '/signup',
-        pageTitle: 'Signup',
-        isAuthenticated: false
+        pageTitle: 'Signup'
     });
 };
 
@@ -57,7 +56,7 @@ const getLogin = (req, res, next) => {
     res.render('auth/login', {
         pageTitle: "Login",
         path: "/login",
-        isAuthenticated: req.session.isLoggedIn || false, // Default value when 'Cookie' header is not present
+        errorMessage: req.flash('error')
     });
 };
 
@@ -72,7 +71,8 @@ const postLogin = (req, res, next) => {
             // if no such user exists, we return an error (afterwards)
             if (!user) {
                 console.log("No Such User Exists!");
-                return res.redirect('/signup');
+                req.flash('error', 'Invalid Email or Password');
+                return res.redirect('/login');
             }
             // else we start to verify the password for the particular user
 

@@ -11,9 +11,7 @@ const getHomePage = (req, res, next) => {
                 pageTitle: "HomePage",
                 path: "/",
                 prods: products,
-                hasProducts: products.length > 0,
-                isAuthenticated: req.session.isLoggedIn,
-                csrfToken: req.csrfToken()
+                hasProducts: products.length > 0
             });
 
         })
@@ -44,8 +42,7 @@ const getProducts = (req, res, next) => {
                 pageTitle: "All Products",
                 path: "/products",
                 prods: products,
-                hasProducts: products.length > 0,
-                isAuthenticated: req.session.isLoggedIn
+                hasProducts: products.length > 0
             });
 
         })
@@ -60,8 +57,7 @@ const getSeparateProduct = (req, res, next) => {
             res.render('shop/product-detail', {
                 pageTitle: `${product.title} - Details`,
                 path: `/products`,
-                product: product,
-                isAuthenticated: req.session.isLoggedIn
+                product: product
             });
 
         })
@@ -78,8 +74,7 @@ const getCart = (req, res, next) => {
             res.render('shop/cart', {
                 pageTitle: "My Cart",
                 path: '/cart',
-                products: products,
-                isAuthenticated: req.session.isLoggedIn
+                products: products
             });
         })
         .catch(err => console.log(err));
@@ -141,8 +136,7 @@ const getCheckOut = (req, res, next) => {
 
     res.render('shop/checkout', {
         pageTitle: "CheckOut!",
-        path: '/checkout',
-        isAuthenticated: req.isLoggedIn
+        path: '/checkout'
     });
 };
 
@@ -164,8 +158,7 @@ const getOrders = (req, res, next) => {
             res.render('shop/orders', {
                 pageTitle: "My Orders",
                 path: "/orders",
-                orders: orders,
-                isAuthenticated: req.session.isLoggedIn
+                orders: orders
             });
 
         })

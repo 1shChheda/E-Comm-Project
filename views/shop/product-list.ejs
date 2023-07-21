@@ -28,6 +28,7 @@
                                     <a href="/products/<%= product._id %>" class="btn">Details</a>
                                     <% if(isAuthenticated) { %>
                                         <form action="/cart" method="POST">
+                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                                             <button class="btn">Add to Cart</button>
                                             <input type="hidden" name="productId" value="<%= product._id %>"> 
                                             <!-- This hidden input field is just used to send the `product.id` info IN THE REQUEST BODY, when we click `Enter` -->

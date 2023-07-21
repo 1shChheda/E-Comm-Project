@@ -10,8 +10,7 @@ const getAddProduct = (req, res, next) => {
     res.render('admin/edit-product', {
         pageTitle : "Add Product",
         path : '/admin/add-product',
-        editing : false,
-        isAuthenticated: req.session.isLoggedIn
+        editing : false
     });
     // next(); // No Need. Will Result in an Error
 };
@@ -63,8 +62,7 @@ const getEditProduct = (req, res, next) => {
             if(!product) {
                 res.status(404).render('404-error', {
                     pageTitle: "Page Not Found",
-                    path: req.path,
-                    isAuthenticated: req.session.isLoggedIn
+                    path: req.path
                 });
             }
     
@@ -72,8 +70,7 @@ const getEditProduct = (req, res, next) => {
                 pageTitle : "Edit Product",
                 path : '/admin/edit-product',
                 editing : editMode,
-                product : product,
-                isAuthenticated: req.session.isLoggedIn
+                product : product
             });
 
         })
@@ -126,8 +123,7 @@ const getProducts = (req, res, next) => {
                 pageTitle : "Admin Products",
                 path : "/admin/products",
                 prods : products, 
-                hasProducts : products.length > 0,
-                isAuthenticated: req.session.isLoggedIn
+                hasProducts : products.length > 0
             });
 
         })
