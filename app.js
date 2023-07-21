@@ -90,7 +90,7 @@ app.use((req, res, next) => {
     }
     Models.User.findById(req.session.user._id)
         .then(user => {
-            req.user = new Models.User(user._id, user.username, user.email, user.cart);
+            req.user = new Models.User(user._id, user.username, user.email, user.password, user.cart);
             next();
         })
         .catch(err => console.log(err))

@@ -15,6 +15,7 @@ const postSignup = (req, res, next) => {
     Models.User.findOne({ email: email })
         .then(existingUser => {
             if (existingUser) {
+                console.log("User Already Exists!");
                 return res.redirect('/signup'); // we'll pass that error message thing afterwards
             }
 
@@ -62,16 +63,42 @@ const getLogin = (req, res, next) => {
 
 const postLogin = (req, res, next) => {
 
-    Models.User.findById('649d7b3fe81b4f425b935f13')
+    const { email, password } = req.body;
+
+    // we search for the user-email in the database
+    Models.User.findOne({ email: email })
         .then(user => {
-            req.session.isLoggedIn = true;
-                // 'session' object is added by the 'session middleware' we wrote earlier
-                // access the 'session' object to store & retrieve user-specific data
-            req.session.user = user;
-            req.session.save((err) => { // when we need to be sure that a session was created before we're redirected
-                console.log(err);
-                res.redirect('/')
-            });
+
+            // if no such user exists, we return an error (afterwards)
+            if (!user) {
+                console.log("No Such User Exists!");
+                return res.redirect('/signup');
+            }
+            // else we start to verify the password for the particular user
+
+            // to compare the password entered & the DB user password
+            bcrypt.compare(password, user.password)
+                // NOTE: In both a matching password and a non-matching password case, we make it into the "then" block
+                // result will be a boolean value:
+                    // true -> matching password
+                    // false -> non-matching password
+                .then(doMatch => {
+                    if (doMatch) {
+                        req.session.isLoggedIn = true;
+                            // 'session' object is added by the 'session middleware' we wrote earlier
+                            // access the 'session' object to store & retrieve user-specific data
+                        req.session.user = user;
+                        return req.session.save((err) => { // when we need to be sure that a session was created before we're redirected
+                            console.log(err);
+                            res.redirect('/')
+                        });
+                    }
+                    res.redirect('signup');
+                })
+                .catch(err => {
+                    console.log(err);
+                    return res.redirect('signup');
+                });
         })
         .catch(err => console.log(err));
 

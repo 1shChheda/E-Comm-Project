@@ -124,7 +124,7 @@ class User {
                     items: products,
                     user: {
                         _id: new mongodb.ObjectId(this._id),
-                        name: req.session.user.username
+                        name: this.username
                     }
                 };
 

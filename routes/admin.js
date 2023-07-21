@@ -4,6 +4,8 @@ const express = require('express');
 
 const adminController = require('../controllers/admin');
 
+const routeProtect = require('../middlewares/routeProtect');
+
 const router = express.Router();
     // helps you group related routes together and organize your code better
     // like a mini version of the main `app` object that allows you to define routes and their corresponding handlers
@@ -11,7 +13,7 @@ const router = express.Router();
 // NOTE : `router` functions work in the exact same way as the `app` function worked
 
 
-router.get('/add-product', adminController.getAddProduct); // I've SPLIT THE CODE into `MVC`
+router.get('/add-product', routeProtect, adminController.getAddProduct); // I've SPLIT THE CODE into `MVC`
 
 // router.use('/cart', (req, res, next) => {
 //     console.log(req.body); // needs to be parsed separately (else it'll give `undefined`)
@@ -20,7 +22,7 @@ router.get('/add-product', adminController.getAddProduct); // I've SPLIT THE COD
 
 // `router.get()`& `router.post()` are same as `router.use()` , but IT ONLY FIRES FOR AN INCOMING GET REQUEST & POST REQUEST respectively
 
-router.post('/add-product', adminController.postAddProduct); // I've SPLIT THE CODE into `MVC`
+router.post('/add-product', routeProtect, adminController.postAddProduct); // I've SPLIT THE CODE into `MVC`
 
 // IMPORTANT NOTE : 
     // same path can be used, If the METHODS differ
@@ -28,12 +30,12 @@ router.post('/add-product', adminController.postAddProduct); // I've SPLIT THE C
     // in such a setup, where our paths, in a router file, start with the same part or same segment,...
         // we can take that segment & mention it in the app.js file...{check it out}
 
-router.get('/edit-product/:productId', adminController.getEditProduct);
+router.get('/edit-product/:productId', routeProtect, adminController.getEditProduct);
 
-router.post('/edit-product', adminController.postEditProduct);
+router.post('/edit-product', routeProtect, adminController.postEditProduct);
 
-router.get('/products', adminController.getProducts);
+router.get('/products', routeProtect, adminController.getProducts);
 
-router.post('/delete-product',adminController.postDeleteProduct);
+router.post('/delete-product', routeProtect, adminController.postDeleteProduct);
 
 module.exports = router // the `router` will have the above 2 routes registered within it
