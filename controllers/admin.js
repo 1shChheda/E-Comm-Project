@@ -1,5 +1,7 @@
 const mongodb = require('mongodb'); // NOTE: I've used new mongodb.ObjectId() at places in this file since the "req.session.user._id" property didn't have the same BSON type as it was required while storing, thus needed to convert it to that type first
 const Models = require('../utils/all_Models');
+
+
 const getAddProduct = (req, res, next) => {
     console.log("in the admin/add-products page");
 
@@ -10,7 +12,8 @@ const getAddProduct = (req, res, next) => {
     res.render('admin/edit-product', {
         pageTitle : "Add Product",
         path : '/admin/add-product',
-        editing : false
+        editing : false,
+        errorMessage: req.flash('error'),
     });
     // next(); // No Need. Will Result in an Error
 };
@@ -27,14 +30,21 @@ const postAddProduct = (req, res, next) => {
     const description = req.body.description;
     const price = req.body.price;
     
-    const product = new Models.Product(null, title, price, description, imageUrl, req.user._id);
+    // Check if any of the required fields are empty
+    if (!title || !imageUrl || !description || !price) {
+        req.flash('error', 'Please fill all the required fields!');
+        res.redirect('/admin/add-product');
+    } else {
 
-    product.save()
-        .then(result => {
-            console.log("Product Created!");
-            res.redirect("/admin/products");
-        })
-        .catch(err => console.log(err))
+    // If all fields are filled, then proceed to save the product
+        const product = new Models.Product(null, title, price, description, imageUrl, req.user._id);
+        product.save()
+            .then(result => {
+                req.flash('success', 'New Product Added!');
+                res.redirect("/admin/products");
+            })
+            .catch(err => console.log(err));
+    }
     
 };
 
@@ -90,6 +100,7 @@ const postEditProduct = (req, res, next) => {
     return product.save()
         .then(result => {
             console.log("Product Updated!");
+            req.flash('success', 'Product Updated Succesfully!');
             res.redirect('/admin/products'); // we shifted it here because we want the updated page to load after the Updation has been performed
         })
 
@@ -103,6 +114,7 @@ const postDeleteProduct = (req, res, next) => {
 
     Models.Product.deleteById(productId)
         .then(results => {
+            req.flash('success', 'Product Has Been Deleted!');
             res.redirect('/admin/products');
         })
         .catch(err => console.log(err));
@@ -123,7 +135,9 @@ const getProducts = (req, res, next) => {
                 pageTitle : "Admin Products",
                 path : "/admin/products",
                 prods : products, 
-                hasProducts : products.length > 0
+                hasProducts : products.length > 0,
+                errorMessage: req.flash('error'),
+                successMessage: req.flash('success')
             });
 
         })

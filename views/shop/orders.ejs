@@ -5,6 +5,16 @@
     <body>
         <%- include('../layouts/navbar.ejs') %>
         <main>
+            <% if (errorMessage.length > 0) { %>
+                <div class="user-message user-message--error">
+                    <i class="fas fa-exclamation-circle"></i> <%= errorMessage %>
+                </div>
+            <% } %>
+            <% if (successMessage.length > 0) { %>
+                <div class="user-message user-message--success">
+                    <i class="fas fa-check-circle"></i> <%= successMessage %>
+                </div>
+            <% } %>
             <% if (orders.length <= 0) { %>
                 <h1>Nothing there!</h1>
             <% } else { %>

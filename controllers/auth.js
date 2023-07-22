@@ -4,7 +4,9 @@ const Models = require('../utils/all_Models');
 const getSignup = (req, res, next) => {
     res.render('auth/signup', {
         path: '/signup',
-        pageTitle: 'Signup'
+        pageTitle: 'Signup',
+        errorMessage: req.flash('error'),
+        successMessage: req.flash('success')
     });
 };
 
@@ -15,7 +17,8 @@ const postSignup = (req, res, next) => {
         .then(existingUser => {
             if (existingUser) {
                 console.log("User Already Exists!");
-                return res.redirect('/signup'); // we'll pass that error message thing afterwards
+                req.flash('error', 'E-mail Already Registered');
+                return res.redirect('/signup');
             }
 
             // const user = new Models.User(null, username, email, password, { items: [] });
@@ -33,6 +36,7 @@ const postSignup = (req, res, next) => {
                 })
                 .then(result => {
                     console.log('User created successfully!');
+                    req.flash('success', 'User Registered Successfully!');
                     res.redirect('/login');
                 });
         })
@@ -56,7 +60,8 @@ const getLogin = (req, res, next) => {
     res.render('auth/login', {
         pageTitle: "Login",
         path: "/login",
-        errorMessage: req.flash('error')
+        errorMessage: req.flash('error'),
+        successMessage: req.flash('success')
     });
 };
 
@@ -90,14 +95,16 @@ const postLogin = (req, res, next) => {
                         req.session.user = user;
                         return req.session.save((err) => { // when we need to be sure that a session was created before we're redirected
                             console.log(err);
+                            req.flash('success', 'Login Successful!');
                             res.redirect('/')
                         });
                     }
-                    res.redirect('signup');
+                    req.flash('error', 'Invalid Email or Password');
+                    res.redirect('/login');
                 })
                 .catch(err => {
                     console.log(err);
-                    return res.redirect('signup');
+                    return res.redirect('/signup');
                 });
         })
         .catch(err => console.log(err));

@@ -252,12 +252,23 @@ form {
   border-radius: 3px;
   background: #b9c9ff;
   text-align: center;
+  position: relative;
+}
+
+.user-message i {
+  margin-right: 0.5rem;
 }
 
 .user-message--error {
   border-color: red;
   background: rgb(255, 176, 176);
   color: red;
+}
+
+.user-message--success {
+  border-color: #4caf50;
+  background: #d9ffd9;
+  color: #4caf50;
 }
 
 @media (min-width: 768px) {

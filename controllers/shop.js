@@ -11,7 +11,9 @@ const getHomePage = (req, res, next) => {
                 pageTitle: "HomePage",
                 path: "/",
                 prods: products,
-                hasProducts: products.length > 0
+                hasProducts: products.length > 0,
+                errorMessage: req.flash('error'),
+                successMessage: req.flash('success')
             });
 
         })
@@ -74,7 +76,9 @@ const getCart = (req, res, next) => {
             res.render('shop/cart', {
                 pageTitle: "My Cart",
                 path: '/cart',
-                products: products
+                products: products,
+                errorMessage: req.flash('error'),
+                successMessage: req.flash('success')
             });
         })
         .catch(err => console.log(err));
@@ -88,6 +92,7 @@ const postCart = (req, res, next) => {
             return req.user.addToCart(product)
         })
         .then(result => {
+            req.flash('success', 'Product Added To Cart!');
             res.redirect('/cart');
         })
         .catch(err => console.log(err))
@@ -125,6 +130,7 @@ const postCartDeleteProduct = (req, res, next) => {
     req.user.deleteItemFromCart(productId)
         .then(result => {
             console.log("Product Removed from the Cart!");
+            req.flash('success', 'Product Removed from Cart!');
             res.redirect('/cart');
         })
         .catch(err => console.log(err));
@@ -143,6 +149,7 @@ const getCheckOut = (req, res, next) => {
 const postOrder = (req, res, next) => {
     req.user.addOrder()
         .then(result => {
+            req.flash('success', 'Order Placed!');
             res.redirect('/orders');
         })
         .catch(err => console.log(err));
@@ -158,7 +165,9 @@ const getOrders = (req, res, next) => {
             res.render('shop/orders', {
                 pageTitle: "My Orders",
                 path: "/orders",
-                orders: orders
+                orders: orders,
+                errorMessage: req.flash('error'),
+                successMessage: req.flash('success')
             });
 
         })
