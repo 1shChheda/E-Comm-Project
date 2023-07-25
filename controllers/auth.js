@@ -1,3 +1,4 @@
+const mongodb = require('mongodb'); // NOTE: I've used new mongodb.ObjectId() at "postNewPassword" to convert the userId (which we get from "getNewPassword" page -> in String Format) into ObjectId (so that we can find the user in the database)
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const Models = require('../utils/all_Models');
@@ -218,16 +219,63 @@ const getNewPassword = (req, res, next) => {
 
     Models.User.findOne({ resetToken: token, resetTokenExpiry: { $gt: Date.now() } })
         .then(user => {
+            if (!user) {
+                req.flash('error', 'Invalid or Expired Token. Please request a new password reset link.');
+                return res.redirect('/reset');
+            }
+
             res.render('auth/new-password', {
                 pageTitle: "New Password Reset",
                 path: "/new-password",
                 errorMessage: req.flash('error'),
                 successMessage: req.flash('success'),
-                userId: user._id.toString()
+                userId: user._id.toString(),
+                passwordToken: token
             });
         })
         .catch(err => console.log(err));
 
+};
+
+const postNewPassword = (req, res, next) => {
+    const { newPassword, userId, passwordToken } = req.body;
+
+    Models.User.findOne({ 
+        resetToken: passwordToken, 
+        resetTokenExpiry: { $gt: Date.now() },
+        _id: new mongodb.ObjectId(userId)
+    })
+    .then(user => {
+        console.log("User found:", user); // to check if user is found
+
+        if (!user) {
+            req.flash('error', 'Invalid password reset link or link has expired.');
+            return res.redirect('/reset');
+        }
+
+        // First, update the password and reset the tokens
+        return bcrypt.hash(newPassword, 12)
+            .then(hashedPassword => {
+                
+                const updatedUser = new Models.User(
+                    user._id,
+                    user.username,
+                    user.email,
+                    hashedPassword,
+                    user.cart,
+                    undefined, // set resetToken to undefined
+                    undefined // set resetTokenExpiry to undefined
+                );
+
+                return updatedUser.save()
+                    .then(result => {
+                        req.flash('success', 'Password Reset Successful!');
+                        return res.redirect('/login');
+                    })
+            })
+            .catch(err => console.log(err));
+    })
+    .catch(err => console.log(err));
 };
 
 const postLogout = (req, res, next) => {
@@ -254,5 +302,6 @@ module.exports = {
     getReset: getReset,
     postReset: postReset,
     getNewPassword: getNewPassword,
+    postNewPassword: postNewPassword,
     postLogout: postLogout
 }
