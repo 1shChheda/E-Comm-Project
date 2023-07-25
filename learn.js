@@ -1311,3 +1311,18 @@ const Product = require('./models/productData');
             };
             
             module.exports = { Send_Mail };
+
+ // ----------------------------------------------------------------------
+    // Resetting Password
+        
+        // To reset password, we FIRST take the user to a view, where he enters his email
+        // Once he hits ENTER, we send a mail WITH A LINK that allows user to reset the password
+
+        // For That, FIRSTLY we need to create a unique Token (with some EXPIRY DATE) which we'll store in our database
+            // so that the link which we then click includes that token and we can verify that the user DID GET THE LINK FROM US (for security mechanism)
+            // so we need that token to put it into the email we send to only let users to change password THROUGH THE EMAIL THAT CONTAINS THAT TOKEN
+
+        // INBUILT package name: 'crypto'
+            // This is a library that helps us with creating secure unique random values (to create token)
+
+            // now, this token should be stored in the database (& moreover it should get stored on the user object -> since it belongs to that user)

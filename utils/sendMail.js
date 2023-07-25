@@ -23,6 +23,7 @@ const Send_Mail = (receiver, subject, body) => {
 
     return transporter.sendMail(mailOptions)
         .then(info => {
+            console.log('Email sent successfully!');
             return true;
         })
         .catch(err => {

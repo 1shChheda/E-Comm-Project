@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const Models = require('../utils/all_Models');
 const Send_Mail = require('../utils/sendMail');
@@ -19,6 +20,11 @@ const postSignup = (req, res, next) => {
             if (existingUser) {
                 console.log("User Already Exists!");
                 req.flash('error', 'E-mail Already Registered');
+                return res.redirect('/signup');
+            }
+
+            if (password !== confirmPassword) {
+                req.flash('error', 'Passwords do not match');
                 return res.redirect('/signup');
             }
 
@@ -138,6 +144,92 @@ const postLogin = (req, res, next) => {
 
 };
 
+const getReset = (req, res, next) => {
+    res.render('auth/reset-password', {
+        pageTitle: "Reset Password",
+        path: "/reset",
+        errorMessage: req.flash('error'),
+        successMessage: req.flash('success')
+    });
+};
+
+const postReset = (req, res, next) => {
+    crypto.randomBytes(32, (err, buffer) => {
+        if (err) {
+            console.log(err);
+            req.flash('error', 'Error while Generating Email Token');
+            return res.redirect('/reset');
+        }
+
+        // now we do have a valid Buffer
+        // now we can generate a token from that Buffer
+        const token = buffer.toString('hex'); 
+            // 'hex' is to tell "toString()" that buffer stores hexadecimal values
+        
+        Models.User.findOne({ email: req.body.email })
+            .then(user => {
+                if(!user) {
+                    req.flash('error', 'No Such Account Exists!');
+                    return res.redirect('/reset');
+                }
+
+                // Construct a new User object with resetToken and resetTokenExpiry
+                const updatedUser = new Models.User(
+                    user._id,
+                    user.username,
+                    user.email,
+                    user.password,
+                    user.cart,
+                    token, // Set the resetToken
+                    Date.now() + 3600000 // Set the resetTokenExpiry to 1hr from now
+                );
+
+                return updatedUser.save()
+                    .then(tokenSaved => {
+                        req.flash('success', `Reset Password Email Sent! Please check your email for further instructions`);
+                        res.redirect('/');
+                        return Send_Mail(
+                            req.body.email,
+                            'Password Reset Request', 
+                            `<p>
+                                    Hello ${user.username},
+
+                                    We have received a request to reset your password. 
+                                    If you did not make this request, you can safely ignore this email.
+
+                                    To reset your password, click on the link below:
+                                    <a href="http://localhost:5000/reset/${token}">Reset Password</a>
+
+                                    Best regards,
+                                    The Ecomm-Shop Team
+                                </p>
+                            `
+                        );
+                    })
+                    .catch(err => console.log(err));
+            })
+            .catch(err => console.log(err));
+    });
+};
+
+const getNewPassword = (req, res, next) => {
+
+    const token = req.params.token;
+
+    Models.User.findOne({ resetToken: token, resetTokenExpiry: { $gt: Date.now() } })
+        .then(user => {
+            res.render('auth/new-password', {
+                pageTitle: "New Password Reset",
+                path: "/new-password",
+                errorMessage: req.flash('error'),
+                successMessage: req.flash('success'),
+                userId: user._id.toString()
+            });
+        })
+        .catch(err => console.log(err));
+
+};
+
 const postLogout = (req, res, next) => {
     req.session.destroy((err) => {
         console.log(err);
@@ -159,5 +251,8 @@ module.exports = {
     postSignup: postSignup,
     getLogin: getLogin,
     postLogin: postLogin,
+    getReset: getReset,
+    postReset: postReset,
+    getNewPassword: getNewPassword,
     postLogout: postLogout
 }

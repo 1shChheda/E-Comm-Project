@@ -2,22 +2,31 @@ const mongodb = require('mongodb');
 const db = require('../utils/database');
 
 class User {
-    constructor(id, username, email, password, cart) {
+    constructor(id, username, email, password, cart, resetToken, resetTokenExpiry) {
         this._id = id ? new mongodb.ObjectId(id) : null;
         this.username = username;
         this.email = email;
         this.password = password;
         this.cart = cart; // { items: [], totalPrice: $ }
+        this.resetToken = resetToken;
+        this.resetTokenExpiry = resetTokenExpiry;
     }
 
     save() {
         const database = db.getDb();
 
-        return database.collection('users').insertOne(this)
-            .then(result => {
-                console.log(result);
-            })
-            .catch(err => console.log(err))
+        // Check if the user is a new user (signing up) or an existing user (updating profile)
+        if (this._id) {
+            // If the user exists, update their details in the database
+            return database.collection('users').updateOne({ _id: this._id }, { $set: this });
+        } else {
+            // If the user is new, insert them into the database
+            return database.collection('users').insertOne(this)
+                .then(result => {
+                    console.log(result);
+                })
+                .catch(err => console.log(err))
+        }
     }
 
     addToCart(product) {
