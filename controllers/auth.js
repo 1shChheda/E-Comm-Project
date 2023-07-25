@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const Models = require('../utils/all_Models');
+const Send_Mail = require('../utils/sendMail');
 
 const getSignup = (req, res, next) => {
     res.render('auth/signup', {
@@ -35,9 +36,35 @@ const postSignup = (req, res, next) => {
                     return user.save();
                 })
                 .then(result => {
-                    console.log('User created successfully!');
                     req.flash('success', 'User Registered Successfully!');
                     res.redirect('/login');
+
+                    return Send_Mail(
+                        email, 
+                        'Welcome Aboard - Thank You for Registering with Ecomm-Shop!', 
+                        `
+                            Dear ${username},
+
+                            Thank you for choosing Ecomm-Shop for your online shopping needs! We are thrilled to have you as a new member of our community.
+                            
+                            Your new account has been successfully created!
+                            Happy shopping!
+
+                            Best regards,
+                            The Ecomm-Shop Team
+                        `
+                    )
+                        .then(emailSent => {
+                            if (emailSent) {
+                                console.log('Signup email sent successfully!');
+                            } else {
+                                console.log('Failed to send the signup email.');
+                            }
+                        })
+                        .catch(err => {
+                            console.log('Error sending the signup email:', err);
+                        });
+
                 });
         })
         .catch(err => console.log(err));

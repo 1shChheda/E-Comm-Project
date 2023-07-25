@@ -1235,3 +1235,79 @@ const Product = require('./models/productData');
             // To access the flash messages in the subsequent request, use "req.flash(type)" to retrieve messages of a specific type from the session
             // The messages are automatically removed from the session after retrieval, ensuring they won't be shown again on future requests
         // NOTE: Initialize it in app.js AFTER you initialize session & csrfProtection
+
+ // ----------------------------------------------------------------------
+    // Sending Emails
+        
+        // How does it Work?
+            // IMP to Understand: nodejs and expressjs --> used for writing our server side logic, BUT, we can't trivially create a mailing server with nodejs
+            // Handling Mails is TOTALLY Different from handling incoming requests and responses (diff technology + very Complex)
+            // Hence we use a Third-Party Service for that
+
+        // What is SMTP? 
+            // SMTP stands for Simple Mail Transfer Protocol. 
+            // It's a set of rules and conventions used to send and deliver emails over the internet. 
+            // SMTP is responsible for transferring the email from the sender's email client (or node application) to the recipient's mail server.
+
+        // What is an SMTP Server?
+            // An SMTP server is a computer program or service that handles outgoing emails. 
+            // When you send an email, your email client (like Gmail, Outlook, or a Node.js application using Nodemailer) communicates with the SMTP server to send the email to the recipient's mail server.
+
+        // Nodemailer Package
+            // Nodemailer is a library for sending emails in Node.js
+            // It is a package in Node.js that provides an interface to connect to an external SMTP server for sending emails.
+            // It requires you to configure and connect to an external SMTP server to actually send the emails.
+        
+        // Third-Party Mail Services? 
+            // SendinBlue, Mailgun, and SendGrid etc.
+            // They provide their own SMTP servers and APIs that allow you to send emails directly through their services.
+
+        // WHERE/HOW EXACTLY TO START Email Sending Stuff with NodeApp?
+            // Install Nodemailer: 
+                // ``npm install --save nodemailer``
+            // Set up an SMTP Server: 
+                // Choose an SMTP server to use for sending emails. 
+                // You can use your email provider's SMTP server or a third-party service like SendinBlue, Mailgun, etc.
+            // Configure Nodemailer: 
+                // In your Node.js application, configure Nodemailer with the SMTP server details, such as host, port, username, and password.
+            // Compose and Send Emails: 
+                // Use Nodemailer's API to compose and send emails from your application.
+
+        // CODE: (with understanding)
+            const nodemailer = require('nodemailer');
+
+            const Send_Mail = (receiver, subject, body) => {
+                    // The transporter object is responsible for sending the email
+                    // Inside the method, we provide the configuration options for the email server we want to use
+                const transporter = nodemailer.createTransport({
+                    host: process.env.MAIL_HOST, // SMTP host address of the email server we want to use for sending emails
+                    port: 587, // port number for the SMTP server (Port 587 is the default port for secure email submission (TLS))
+                    secure: false, // means we are not using a secure connection (TLS/SSL) --> ITs FINE as email servers at port 587 support TLS encryption
+                    auth: { // authentication credentials for the email server
+                        user: process.env.MAIL_USER,
+                        pass: process.env.MAIL_PASSWORD,
+                    },
+                    tls: { // "Transport Layer Security" options for the connection
+                        rejectUnauthorized: true,
+                    },
+                });
+            
+                const mailOptions = {
+                    from: "Ecomm Shop <ecomm-shop@node.com>",
+                    subject: subject,
+                    to: receiver,
+                    text: body,
+                };
+            
+                return transporter.sendMail(mailOptions)
+                    .then(info => {
+                        console.log('Email sent successfully!');
+                        return true;
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        return false;
+                    });
+            };
+            
+            module.exports = { Send_Mail };
