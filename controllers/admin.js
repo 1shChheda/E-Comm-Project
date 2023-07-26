@@ -1,6 +1,4 @@
-const mongodb = require('mongodb'); // NOTE: I've used new mongodb.ObjectId() at places in this file since the "req.session.user._id" property didn't have the same BSON type as it was required while storing, thus needed to convert it to that type first
 const Models = require('../utils/all_Models');
-
 
 const getAddProduct = (req, res, next) => {
     console.log("in the admin/add-products page");
@@ -76,11 +74,18 @@ const getEditProduct = (req, res, next) => {
                 });
             }
     
+            if (product.userId.toString() !== req.user._id.toString()) {
+                req.flash('error', 'Unauthorized Product Edit!');
+                return res.redirect('/admin/products');
+            }
+
             res.render('admin/edit-product', {
                 pageTitle : "Edit Product",
                 path : '/admin/edit-product',
                 editing : editMode,
-                product : product
+                product : product,
+                errorMessage: req.flash('error'),
+                successMessage: req.flash('success')
             });
 
         })
@@ -95,16 +100,36 @@ const postEditProduct = (req, res, next) => {
     const updatedDescription = req.body.description;
     const updatedImageUrl = req.body.imageUrl;
 
-    const product = new Models.Product(productId, updatedTitle, updatedPrice, updatedDescription, updatedImageUrl, req.user._id)
-    // To save these changes in our database, we simply use:
-    return product.save()
-        .then(result => {
-            console.log("Product Updated!");
-            req.flash('success', 'Product Updated Succesfully!');
-            res.redirect('/admin/products'); // we shifted it here because we want the updated page to load after the Updation has been performed
-        })
+    Models.Product.findById(productId)
+        .then(product => {
+            if (!product) {
+                req.flash('error', 'Product not found!');
+                return res.redirect('/admin/products');
+            }
 
-        // this `catch` block will catch errors from both `.findByPk()` & `.save()`
+            if (product.userId.toString() !== req.user._id.toString()) {
+                req.flash('error', 'Unauthorized Product Edit!');
+                return res.redirect('/admin/products');
+            }
+
+            // Only proceed with the update if the user is authorized
+            const updatedProduct = new Models.Product(
+                productId,
+                updatedTitle,
+                updatedPrice,
+                updatedDescription,
+                updatedImageUrl,
+                req.user._id
+            );
+
+            // To save these changes in our database, we simply use:
+            return updatedProduct.save()
+                .then(result => {
+                    console.log("Product Updated!");
+                    req.flash('success', 'Product Updated Successfully!');
+                    res.redirect('/admin/products'); // we shifted it here because we want the updated page to load after the Updation has been performed
+                });
+        })
         .catch(err => console.log(err));
 };
 
@@ -112,10 +137,20 @@ const postDeleteProduct = (req, res, next) => {
 
     const productId = req.body.productId;
 
-    Models.Product.deleteById(productId)
-        .then(results => {
-            req.flash('success', 'Product Has Been Deleted!');
-            res.redirect('/admin/products');
+    Models.Product.findById(productId)
+        .then(product => {
+            if (product.userId.toString() !== req.user._id.toString()) {
+                req.flash('error', 'Unauthorized! Cannot Delete Product');
+                return res.redirect('/admin/products');
+            }
+
+            // Only proceed with the deletion if the user is authorized
+            Models.Product.deleteById(productId)
+                .then(results => {
+                    req.flash('success', 'Product Has Been Deleted!');
+                    return res.redirect('/admin/products');
+                })
+                .catch(err => console.log(err));
         })
         .catch(err => console.log(err));
 
@@ -128,7 +163,8 @@ const getProducts = (req, res, next) => {
     // ONE FILTERS :
         // 1) we want all products which belong only to a particular user
     
-    Models.Product.fetchAll()
+    // Models.Product.fetchAll()
+    Models.Product.find({ userId: req.user._id })
         .then(products => {
             
             res.render('admin/products',{ 

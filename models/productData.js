@@ -42,6 +42,17 @@ class Product {
 
     }
 
+    static find(filter) {
+        const database = db.getDb();
+
+        return database.collection('products').find(filter).toArray()
+            .then(products => {
+                return products;
+            })
+            .catch(err => console.log(err))
+            
+    }
+
     static findById(productId) {
         const database = db.getDb();
 

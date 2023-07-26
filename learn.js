@@ -1326,3 +1326,33 @@ const Product = require('./models/productData');
             // This is a library that helps us with creating secure unique random values (to create token)
 
             // now, this token should be stored in the database (& moreover it should get stored on the user object -> since it belongs to that user)
+
+        // Refer auth.js , Especially CODES OF: ("getReset", "postReset", "getNewPassword", "postNewPassword")
+
+ // ----------------------------------------------------------------------
+    // Authorization
+        // Right Now, any User can create products (works fine)
+            // but they can also EDIT/DELETE the products which were not created by them (sounds unfair, innit?)
+            
+        // So, Authorization means to restrict the permission of a logged in user
+            // So Users can add any product in their Cart (even ones made by others), but they'll not be able to edit/delete products made by other users
+
+        // How to Implement ?
+            // 1) whilst showing `Admin Products` (CODE in "getProducts") -> just show them the products which they themselves have created (using the "userId" field that we attached in the product object)
+                // CODE: `Models.Product.find({ userId: req.user._id })`
+
+            // 2) Now User can see only products he has created himself
+                // BUT still he can access->edit/delete other user products via LINKs/URLs! So more Protection is needed in POST Actions
+
+            // 3) so in "postEditProduct" & "postDeleteProduct" we need to check that the product user tries to edit/delete is really created by that user himself or not
+                // CODE: `
+                //     Models.Product.findById(productId)
+                //         .then(product => {
+                //             if (product.userId.toString() !== req.user._id.toString()) {
+                //                 req.flash('error', 'Unauthorized Product Edit!');
+                //                 return res.redirect('/admin/products');
+                //             }
+                //             /* Rest of the Code */
+                //     `
+
+            // 4) Additionally, you can keep the same restriction [as mentioned in (3)] in "getEditProduct" so that random user can even access the product edit URL
