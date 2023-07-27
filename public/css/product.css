@@ -24,4 +24,6 @@
 
 .product__description {
     text-align: center;
+    max-height: 12rem;
+    overflow: hidden;
 }
