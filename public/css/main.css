@@ -131,15 +131,36 @@ form {
   border-radius: 3px;
 }
 
+/* Navbar Logo Section */
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  margin-right: auto;
+  padding-left: 1.5rem;
+}
+
+.navbar-logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.navbar-logo-image {
+  width: 230px;
+  height: auto;
+  margin-right: 1rem;
+}
+
 .burger-icon {
+  display: flex;
+  align-items: center;
   border: none;
   background: transparent;
   color: white;
   font-size: 1.5rem;
   padding: 0.5rem;
   cursor: pointer;
-  display: flex;
-  align-items: center;
 }
 
 .burger-icon i {
@@ -157,6 +178,8 @@ form {
   z-index: 5;
   display: none;
 }
+
+/* ----------- */
 
 .grid {
   display: flex;
@@ -179,7 +202,7 @@ form {
 
 .card:hover {
   transform: translateY(-5px) rotateX(5deg);
-  box-shadow: rgba(0, 0, 0, 0.19) 0px 15px 30px, rgba(0, 0, 0, 0.23) 0px 10px 10px; /* Slightly increase the shadow on hover */
+  box-shadow: rgba(0, 0, 0, 0.19) 0px 15px 30px, rgba(0, 0, 0, 0.23) 0px 10px 10px;
 }
 
 .card__content {
@@ -357,8 +380,120 @@ form {
   animation: bounce 2s infinite;
 }
 
+/* Product Carousel Section */
+
+.carousel-container {
+  margin: 2rem auto;
+  max-width: 1200px;
+}
+
+.carousel {
+  position: relative;
+  overflow: hidden;
+}
+
+.carousel__track {
+  display: flex;
+  transition: transform 0.3s ease-in-out;
+}
+
+.carousel__slide-wrapper {
+  display: flex;
+  width: 100%;
+}
+
+.card-carousel {
+  display: flex;
+  flex-wrap: nowrap;
+  transition: transform 0.3s;
+}
+
+.card {
+  flex: 0 0 calc(20% - 1rem);
+}
+
+@media (max-width: 768px) {
+  .card {
+    flex: 0 0 calc(100% - 1rem);
+  }
+}
+
+.product-carousel {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  margin: 2rem auto;
+  background-color: #f5f5f5;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.product-carousel__slides {
+  display: flex;
+  transition: transform 0.3s ease-in-out;
+  align-items: center;
+}
+
+.product-carousel__slide {
+  flex: 0 0 calc(10% - 1rem);
+  margin: 0 0.5rem;
+  transition: transform 0.3s ease-in-out;
+}
+
+.carousel-controls {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 1rem;
+}
+
+.carousel-control {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.carousel-control:hover {
+  background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .product-carousel__slide {
+    flex: 0 0 calc(100% - 1rem);
+  }
+}
+
+/* ----------- */
+
+/* Logo Section */
+
+.logo-section {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.logo-image {
+  max-width: 300px;
+  height: auto;
+}
+
+/* ----------- */
+
 @media (min-width: 768px) {
   .main-header__nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     width: 100%;
   }
 
@@ -371,6 +506,14 @@ form {
   }
 
   .mobile-nav {
+    display: none;
+  }
+  
+  .burger-icon {
+    display: flex;
+  }
+
+  .navbar-logo {
     display: none;
   }
 
