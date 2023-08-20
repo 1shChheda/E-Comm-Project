@@ -1356,3 +1356,53 @@ const Product = require('./models/productData');
                 //     `
 
             // 4) Additionally, you can keep the same restriction [as mentioned in (3)] in "getEditProduct" so that random user can even access the product edit URL
+
+ // ----------------------------------------------------------------------
+    // Data Validation
+        // Right now, we're just taking the data from the User, Storing it in our DB, & showing it to the User
+        // We aren't "validating" the data that we're recieving from the User
+            // i.e. for e.g: if a User enters a wrong/incorrect email while signup, we still take it in --> This shouldn't happen, we must have some thing to "validate" that the email entered is a "valid email" or not
+        
+        // So, when the form data gets submitted, we take it through the VALIDATION middleware first, before it reaches our NodeJS backend (for data storing)
+
+        // How to Implement?
+            
+            // TWO WAYS!
+                // 1) Validation from CLIENT-SIDE JS (OPTIONAL)
+                    // before any request is sent, we can write some javascript (that for example, watches the inputs for key events)
+                    // so for the user typing and then checks the input whilst the user is working on the form
+                    // & then we can display an error (before anything is sent to the server) because we can use javascript to change the dom at runtime
+                    // (extensively used in REACT & ANGULAR) -> enhances the User Experience (since it remembers Client Data & client doesn't have to enter the entire data again {like we've to do in NodeJS App})
+
+                    // BUT, This is NOT SECURE!
+                        // Since this JS code runs on Browser -> So User can see this Code -> User can change & disable the code, thus DISABLING THE VALIDATION
+
+                // 2) Validation from SERVER-SIDE (REQUIRED)
+                    // VERY SECURE!
+                        // since the user can't see the code at all, (since all this happens at the server-side) & thus we can safely validate incoming data
+
+                        // So we have to try to: 
+                            // 1) Validate User Data,  whilst 
+                            // 2) Also keep the Old Data Input, while returning a Error Message (for better User Experience)
+
+            // package used: "express-validator"
+            
+            // We use the validation on NON-GET routes
+
+            // const { check, validationResult } = require('express-validator');
+                // "check()" 
+                    // -> USED TO COLLECT validation ERRORS
+                    // -> This function is the main API used for validating and sanitizing HTTP requests with express-validator
+
+                    // SYNTAX: check(fields, message)
+                        // fields 
+                            // -> name(s) of the field (from the req which we recieve)
+                            // -> If omitted, selects the whole request location
+                        // message	
+                            // -> Which error message to use when a validator doesn't specify one.
+
+                    // we get to use various other functions alongwith "check()"
+
+                // "validationResult()" 
+                    // -> USED TO Utilze those COLLECTED validation ERRORS
+

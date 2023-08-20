@@ -15,7 +15,7 @@ const Send_Mail = (receiver, subject, body) => {
     });
 
     const mailOptions = {
-        from: "Ecomm Shop <ecomm-shop@node.com>",
+        from: "VanShify <vanshify-shop@ecomm.com>",
         subject: subject,
         to: receiver,
         text: body,

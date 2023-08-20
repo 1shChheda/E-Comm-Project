@@ -56,7 +56,7 @@ class Product {
     static findById(productId) {
         const database = db.getDb();
 
-        // return database.collection('products').find({ _id : productId })
+        // return database.collection('products').f ind({ _id : productId })
             // Note: '_id' is an Object provided by MongoDB, & above, we're technically comparing an Object (_id) with a String (productId)
 
         return database.collection('products').find({ _id : new mongodb.ObjectId(productId) })

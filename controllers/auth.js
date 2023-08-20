@@ -1,6 +1,7 @@
 const mongodb = require('mongodb'); // NOTE: I've used new mongodb.ObjectId() at "postNewPassword" to convert the userId (which we get from "getNewPassword" page -> in String Format) into ObjectId (so that we can find the user in the database)
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
+const { validationResult } = require('express-validator');
 const Models = require('../utils/all_Models');
 const Send_Mail = require('../utils/sendMail');
 
@@ -9,25 +10,38 @@ const getSignup = (req, res, next) => {
         path: '/signup',
         pageTitle: 'Signup',
         errorMessage: req.flash('error'),
-        successMessage: req.flash('success')
+        successMessage: req.flash('success'),
+        oldInput: {
+            username: "",
+            email: "",
+            password: "",
+            confirmPassword: ""
+        }
     });
 };
 
 const postSignup = (req, res, next) => {
     const { username, email, password, confirmPassword } = req.body;
 
-    Models.User.findOne({ email: email })
-        .then(existingUser => {
-            if (existingUser) {
-                console.log("User Already Exists!");
-                req.flash('error', 'E-mail Already Registered');
-                return res.redirect('/signup');
-            }
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
 
-            if (password !== confirmPassword) {
-                req.flash('error', 'Passwords do not match');
-                return res.redirect('/signup');
+        console.log(errors.array());
+
+        return res.status(422).render('auth/signup', {
+            path: '/signup',
+            pageTitle: 'Signup',
+            errorMessage: errors.array()[0].msg,
+            successMessage: req.flash('success'),
+            oldInput: {
+                username: username,
+                email: email,
+                password: password,
+                confirmPassword: confirmPassword
             }
+        });
+
+    };
 
             // const user = new Models.User(null, username, email, password, { items: [] });
                 // we cannot store password in plain text (as it is) --> {can be dangerous if the DB gets compromised, everything is exposed!}
@@ -35,7 +49,7 @@ const postSignup = (req, res, next) => {
 
                 // package used: "bcryptjs"
             
-            return bcrypt.hash(password, 12)
+            bcrypt.hash(password, 12)
                 // 1st value: "String that you want to hash"
                 // 2nd value: "Salt value" --> rounds of hashing needs to be applied (higher the value, the longer it'll take but the more secure it'll be)
                 .then(hashedPassword => {
@@ -48,17 +62,22 @@ const postSignup = (req, res, next) => {
 
                     return Send_Mail(
                         email, 
-                        'Welcome Aboard - Thank You for Registering with Ecomm-Shop!', 
+                        'Welcome Aboard - Thank You for Registering with VanShify!', 
                         `
                             Dear ${username},
 
-                            Thank you for choosing Ecomm-Shop for your online shopping needs! We are thrilled to have you as a new member of our community.
+                            Thank you for choosing VanShify for your online shopping needs! We are thrilled to have you as a new member of our community.
                             
                             Your new account has been successfully created!
                             Happy shopping!
 
+                            PLEASE NOTE: 
+                            - This is a FAKE Shopping Website, Just a Ecommerce Website Project.
+                            - So you can't buy stuff for Real.
+                            - Just Explore the Site, & Have Fun!
+
                             Best regards,
-                            The Ecomm-Shop Team
+                            The VanShify Team
                         `
                     )
                         .then(emailSent => {
@@ -71,10 +90,8 @@ const postSignup = (req, res, next) => {
                         .catch(err => {
                             console.log('Error sending the signup email:', err);
                         });
-
-                });
-        })
-        .catch(err => console.log(err));
+                })
+                .catch(err => console.log(err));
 };
 
 const getLogin = (req, res, next) => {
@@ -102,6 +119,20 @@ const getLogin = (req, res, next) => {
 const postLogin = (req, res, next) => {
 
     const { email, password } = req.body;
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+
+        console.log(errors.array());
+
+        return res.status(422).render('auth/login', {
+            path: '/login',
+            pageTitle: 'Login',
+            errorMessage: errors.array()[0].msg,
+            successMessage: req.flash('success')
+        });
+
+    };
 
     // we search for the user-email in the database
     Models.User.findOne({ email: email })
@@ -202,7 +233,7 @@ const postReset = (req, res, next) => {
                                     <a href="http://localhost:5000/reset/${token}">Reset Password</a>
 
                                     Best regards,
-                                    The Ecomm-Shop Team
+                                    The VanShify Team
                                 </p>
                             `
                         );
